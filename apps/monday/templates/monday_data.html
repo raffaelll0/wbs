@@ -1,0 +1,40 @@
+<!-- my_template.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>commessa</title>
+</head>
+<body>
+    <h1>Commessa</h1>
+    <table>
+        <tbody>
+            {% for row in table_data %}
+            <tr>
+                {% for element in row %}
+                <td>{{ element }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<head>
+    <title>Aziende</title>
+</head>
+<body>
+    <h1>Aziende</h1>
+    <table>
+        <tbody>
+            {% for row_1 in table_data_aziende %}
+            <tr>
+                {% for element_1 in row_1 %}
+                <td>{{ element_1 }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</body>
+</html>
+

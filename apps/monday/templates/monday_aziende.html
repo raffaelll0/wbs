@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Aziende</title>
+</head>
+<body>
+    <h1>Aziende</h1>
+    <table>
+        <tbody>
+            {% for row_1 in table_data_aziende %}
+            <tr>
+                {% for element_1 in row_1 %}
+                <td>{{ element_1 }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
