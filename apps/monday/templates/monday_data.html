@@ -1,11 +1,14 @@
 <!-- my_template.html -->
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>commessa</title>
 </head>
+
 <body>
     <h1>Commessa</h1>
+
     <table>
         <tbody>
             {% for row in table_data %}
@@ -21,6 +24,7 @@
 <head>
     <title>Aziende</title>
 </head>
+
 <body>
     <h1>Aziende</h1>
     <table>
@@ -35,6 +39,96 @@
         </tbody>
     </table>
 </body>
+
+<head>
+    <title>Task</title>
+</head>
+
+<body>
+    <h1>Task</h1>
+    <table>
+        <tbody>
+            {% for row_2 in table_data_task %}
+            <tr>
+                {% for element_2 in row_2 %}
+                <td>{{ element_2 }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+
+
+<head>
+    <title>Contratti</title>
+</head>
+
+<body>
+    <h1>Contratti</h1>
+    <table>
+        <tbody>
+            {% for row_3 in table_data_contratti %}
+            <tr>
+                {% for element_3 in row_3 %}
+                <td>{{ element_3 }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+
+
+
+
+<head>
+    <title>Servizi</title>
+</head>
+
+<body>
+    <h1>Servizi</h1>
+    <table>
+        <tbody>
+            {% for row_4 in table_data_servizi %}
+            <tr>
+                {% for element_4 in row_4 %}
+                <td>{{ element_4 }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+
+
+<head>
+    <title>Contatti</title>
+</head>
+
+<body>
+    <h1>Contatti</h1>
+    <table>
+        <tbody>
+            {% for row_5 in table_data_contatti %}
+            <tr>
+                {% for element_5 in row_5 %}
+                <td>{{ element_5 }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+
+
+
+
+
 </body>
 </html>
 

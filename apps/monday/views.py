@@ -1,70 +1,53 @@
 from django.shortcuts import render
-from .monday import dump_mdc_to_django, dump_aziende  # Import your module with dump_mdc_to_django function
-from apps.neapolitanmods.models import Commessa, Aziende  # Import the Commessa model
+from .monday import *
+from ..neapolitanmods.models import Commessa, Aziende  # Import the Commessa model
 
 
 def monday_data_view(request):
-    table_data = dump_mdc_to_django() # Call the function to fetch data
-    table_data_aziende = dump_aziende()
-    
-    for row_az in table_data_aziende[1:]:  # Start from index 1 to skip headers
-        nome_az = row_az[0]
-        id_monday_az = row_az[5]
+    """
 
-        aziende, created = Aziende.objects.get_or_create(nome=nome_az)
-        aziende.id_monday = id_monday_az
+    """
+    # TODO: cancella tabelle prima di iniziare a scrivere
 
-        aziende.save()
-    # Iterate through the data and update the Commessa model
-    for row in table_data[1:]:  # Start from index 1 to skip headers
-        nome = row[0]  # Assuming the name is in the first column
-        id_monday = row[1]  # Assuming the id_monday is in the second column
-        tipo = row[2]
-        priority = row[3]
-        date = row[4][0:10]
-        aziende_value = row[5]
+    table_data_commesse = fetch_mdc_commesse()  # Call the function to fetch data
+    table_data_aziende = fetch_mdc_aziende()
+    table_data_task = fetch_mdc_task()
+    table_data_contratti = fetch_mcd_contratti()
+    table_data_servizi = fetch_mcd_servizi()
+    table_data_contatti = fetch_mcd_contatti()
 
-        commessa, created = Commessa.objects.get_or_create(nome=nome)
-        commessa.id_monday = id_monday
-        commessa.tipologia = tipo
-        commessa.ultimo_aggiornamento = date
+    write_aziende(table_data_aziende)
+    write_commesse(table_data_commesse)
+    commesse_aziende_pair()
+    task_commesse_pair()
 
-        selected_choice = None
-        for choice_value, choice_label in Commessa.STATUS_PRIORITA:
-            if priority == choice_label:
-                selected_choice = choice_value
-                break
-
-        # Set the selected choice to the 'priorità' field
-        if selected_choice is not None:
-            commessa.priorità = selected_choice
-        else:
-            # Handle the case when the value doesn't match any choices
-            pass
-
-        try:
-            aziende_instance = Aziende.objects.get(nome=aziende_value)
-        except Aziende.DoesNotExist:
-            aziende_instance = None
-
-        # Create a new Commessa instance and associate it with the Aziende instance (if found)
-        if aziende_instance:
-            commessa.id_aziende = aziende_instance
-
-        else:
-            # Handle the case when the value doesn't match any existing Aziende instance
-            pass
-
-
-        commessa.save()
+    write_task(table_data_task)
+    write_contratti(table_data_contratti)
+    write_servizi(table_data_servizi)
+    write_contatti(table_data_contatti)
 
 
 
-
-
-    return render(request, 'monday_data.html', {'table_data': table_data, 'table_data_aziende': table_data_aziende})
+    return render(request, 'monday_data.html', {'table_data': table_data_commesse, 'table_data_aziende': table_data_aziende, 'table_data_task': table_data_task, 'table_data_contratti': table_data_contratti, 'table_data_servizi': table_data_servizi, 'table_data_contatti': table_data_contatti})
 
 # def monday_data_aziende(request):
 #     table_data_aziende = dump_aziende()
 #
 #     return render(request, 'monday_aziende.html', {'table_data_aziende': table_data_aziende})
+
+#A
+#itero nei dati delle aziende
+#se il campo commessa è valorizzato:
+# creo commessa con nome e id_monday
+# # se no passa
+#creo azienda e salvo
+
+#itero nei dati dell commesse
+# get or create commessa con id _monday= x
+
+#B
+#itero nei dati delle aziende
+
+#creo azienda con colonna "id monday commessa" e salvo
+
+#itero nei dati dell commesse

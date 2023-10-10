@@ -7,7 +7,7 @@ class Utente(models.Model):
     nome = models.CharField(max_length=200, null=True)
     email = models.CharField(max_length=200, null=True)
     telefono = models.CharField(max_length=200, null=True)
-    id_monday = models.IntegerField(null=True)
+    id_monday = models.BigIntegerField(null=True)
 
 
 
@@ -26,29 +26,17 @@ test = Utente("name")
 
 #funzionante
 class Commessa(models.Model):
-    BASSA = "BA"
-    MEDIO = "MD"
-    ALTA = "AL"
-
-    STATUS_PRIORITA = [
-        (BASSA, "Bassa"),
-        (MEDIO, "Media"),
-        (ALTA, "Alta"),
-    ]
-
 
     nome = models.CharField(max_length=200, null=True)
     id_monday = models.BigIntegerField(null=True)
-    tipologia = models.CharField(max_length=200,null=True)
+    tipologia = models.CharField(max_length=200, null=True)
     ultimo_aggiornamento = models.DateField(null=True, blank=True)
-    priorità = models.CharField(
-        max_length=200,
-        choices=STATUS_PRIORITA,
-        null=True
-    )
+    priorità = models.CharField(max_length=200, null=True)
     #FOREIGN KEYS DI COMMESSA
     id_servizio = models.ForeignKey('Task', null=True, on_delete=models.SET_NULL)
-    id_aziende = models.ForeignKey('Aziende', null=True, on_delete=models.SET_NULL)
+    cliente_finale = models.ForeignKey('Aziende', null=True, on_delete=models.SET_NULL)
+    id_azienda = models.BigIntegerField(null=True)
+
 
 
 
@@ -64,45 +52,19 @@ class Commessa(models.Model):
 #funzionante
 class Task(models.Model):
 
-    BASSA = "BA"
-    MEDIO = "MD"
-    ALTA = "AL"
-
-    STATUS_PRIORITA = [
-        (BASSA, "Bassa"),
-        (MEDIO, "Medio"),
-        (ALTA, "Alta"),
-    ]
-    DEFINIRE = "DE"
-    TASK = "TA"
-    CONSEGNA = "CO"
-
-    TIPOLOGIA_TASK = [
-        (DEFINIRE, "Da definire"),
-        (TASK, "task"),
-        (CONSEGNA, "Consegna"),
-    ]
-
     nome = models.CharField(max_length=200, null=True)
-    id_monday = models.IntegerField(null=True)
+    id_monday = models.BigIntegerField(null=True)
 
-    tipo = models.CharField(
-        max_length=2,
-        choices=TIPOLOGIA_TASK,
-        null=True
-    )
+    tipo = models.CharField(max_length=200,null=True)
     data_creazione = models.DateField(null=True, blank=True)
     sollecito = models.DateField(null=True, blank=True)
+    priorità = models.CharField(max_length=200, null=True)
+    id_commessa = models.BigIntegerField(null=True)
 
-    priorità = models.CharField(
-        max_length=2,
-        choices=STATUS_PRIORITA,
-        null=True
-    )
     # FOREIGN KEYS DI COMMESSA
     id_contatti = models.ForeignKey('Contatti', null=True, on_delete=models.SET_NULL)
     responsabile = models.ForeignKey('Utente', null=True, on_delete=models.SET_NULL)
-    id_commessa = models.ForeignKey('Commessa', null=True, on_delete=models.SET_NULL)
+    commesse = models.ManyToManyField(Commessa)
 
 
     def __str__(self):
@@ -114,7 +76,7 @@ class Task(models.Model):
 #funzionante
 class Contratti(models.Model):
     nome = models.CharField(max_length=200, null=True)
-    id_monday = models.IntegerField(null=True)
+    id_monday = models.BigIntegerField(null=True)
     ultimo_aggiornamento = models.DateField(null=True, blank=True)
     data_creazione = models.DateField(null=True, blank=True)
 
@@ -129,36 +91,18 @@ class Contratti(models.Model):
 
     class Meta:
         verbose_name_plural = "Contratti"
-#FUNZIONANTE
+
+
 class Aziende(models.Model):
-    ONE = "1"
-    TWO = "2"
-    THREE = "3"
-    FOUR = "4"
-    FIVE = "5"
 
-    STATUS_VOTO = [
-        (ONE, "1"),
-        (TWO, "2"),
-        (THREE, "3"),
-        (FOUR, "4"),
-        (FIVE, "5"),
-
-    ]
     nome = models.CharField(max_length=200, null=True)
     id_monday = models.BigIntegerField(null=True)
-
     commesse = models.ManyToManyField(Commessa)
-    p_iva = models.IntegerField(null=True)
+    p_iva = models.BigIntegerField(null=True)
     cod_fis = models.TextField(max_length=200, null=True)
-    voto = models.CharField(
-        max_length=2,
-        choices=STATUS_VOTO,
-        null=True
-    )
+    id_commessa = models.BigIntegerField(null=True)
 
     # FOREIGN KEYS DI AZIENDE
-    id_contatti = models.ForeignKey('Contatti', null=True, on_delete=models.SET_NULL)
     responsabile = models.ForeignKey('Utente', null=True, on_delete=models.SET_NULL)
 
 
@@ -190,7 +134,7 @@ class Fatture(models.Model):
         null=True
     )
     nome = models.CharField(max_length=200, null=True)
-    id_monday = models.IntegerField(null=True)
+    id_monday = models.BigIntegerField(null=True)
 
     #incassi
     data_incasso = models.DateField(null=True, blank=True)
@@ -200,6 +144,7 @@ class Fatture(models.Model):
     contratto = models.ForeignKey('Contratti', null=True, on_delete=models.SET_NULL)
     parte_passiva = models.ForeignKey(Aziende, null=True, on_delete=models.SET_NULL)
     commessa = models.ForeignKey(Commessa, null=True, on_delete=models.SET_NULL)
+
 
     def __str__(self):
         return str(self.nome)
@@ -238,7 +183,7 @@ class Servizio(models.Model):
         (PROCACCIAMENTO, "Procacciamento"),
     ]
     nome = models.CharField(max_length=200, null=True)
-    id_monday = models.IntegerField(null=True)
+    id_monday = models.BigIntegerField(null=True)
 
     tipologia = models.CharField(
         max_length=2,
@@ -247,7 +192,6 @@ class Servizio(models.Model):
     )
     link_fonte = models.TextField(max_length=200, null=True)
     documenti = models.FileField(null=True)
-    scheda_clienti = models.FileField(null=True)
 
     # FOREIGN KEYS DI SERVIZIO
     referente = models.ForeignKey(Utente, null=True, on_delete=models.SET_NULL)
@@ -261,7 +205,7 @@ class Servizio(models.Model):
 #funzionante
 class Contatti(models.Model):
     nome = models.CharField(max_length=200, null=True)
-    id_monday = models.IntegerField(null=True)
+    id_monday = models.BigIntegerField(null=True)
     in_qualita_di = models.CharField(max_length=200, null=True)
     #titolare_effettivo = models.ForeignKey(Aziende, null=True, on_delete=models.SET_NULL)
     #azienda_di_appartenenza = models.ForeignKey(Aziende, null=True, on_delete=models.SET_NULL)

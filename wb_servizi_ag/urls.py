@@ -70,12 +70,12 @@ urlpatterns += UtenteView.get_urls()
 
 class CommessaView(CRUDView):
     model = apps.neapolitanmods.models.Commessa
-    fields = ["id_monday", "nome", "tipologia", "ultimo_aggiornamento", "priorità", "id_servizio", "id_aziende"]
+    fields = ["id_monday", "nome", "tipologia", "ultimo_aggiornamento", "priorità", "id_servizio", "cliente_finale"]
 urlpatterns += CommessaView.get_urls()
 
 class TaskView(CRUDView):
     model = apps.neapolitanmods.models.Task
-    fields = ["id_monday", "nome", "tipo", "data_creazione", "sollecito", "responsabile", "priorità", "id_contatti", "id_commessa"]
+    fields = ["id_monday", "nome", "tipo", "data_creazione", "sollecito", "responsabile", "priorità", "id_contatti", "commesse"]
 urlpatterns += TaskView.get_urls()
 
 class ContrattiView(CRUDView):
@@ -85,7 +85,7 @@ urlpatterns += ContrattiView.get_urls()
 
 class AziendeView(CRUDView):
     model = apps.neapolitanmods.models.Aziende
-    fields = ["id_monday", "nome", "responsabile", "commesse", "p_iva", "cod_fis", "voto", "id_contatti"]
+    fields = ["id_monday", "nome", "responsabile", "commesse", "p_iva", "cod_fis"]
 urlpatterns += AziendeView.get_urls()
 
 class FattureView(CRUDView):
@@ -101,7 +101,7 @@ urlpatterns += FattureView.get_urls()
 
 class ServizioView(CRUDView):
     model = apps.neapolitanmods.models.Servizio
-    fields = ["id_monday", "nome", "referente", "tipologia", "link_fonte", "documenti", "scheda_clienti"]
+    fields = ["id_monday", "nome", "referente", "tipologia", "link_fonte", "documenti"]
 urlpatterns += ServizioView.get_urls()
 
 class ContattiView(CRUDView):
