@@ -129,6 +129,29 @@
 
 
 
+<head>
+    <title>Fatture</title>
+</head>
+
+<body>
+    <h1>Fatture</h1>
+    <table>
+        <tbody>
+            {% for row_6 in table_data_fatture %}
+            <tr>
+                {% for element_6 in row_6 %}
+                <td>{{ element_6 }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+
+
+
+
 </body>
 </html>
 

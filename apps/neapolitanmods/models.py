@@ -119,34 +119,19 @@ class Aziende(models.Model):
         verbose_name_plural = "Aziende"
 
 class Fatture(models.Model):
-    A0 = "20"
-    A1 = "21"
-    A2 = "22"
-    A3 = "23"
 
-    ANNO = [
-        (A0, "2020"),
-        (A1, "2021"),
-        (A2, "2022"),
-        (A3, "2023")
-    ]
-
-    anno_competenza = models.CharField(
-        max_length=2,
-        choices=ANNO,
-        null=True
-    )
+    anno_competenza = models.CharField(max_length=200, null=True)
     nome = models.CharField(max_length=200, null=True)
     id_monday = models.BigIntegerField(null=True)
+    id_contratti = models.BigIntegerField(null=True)
 
     #incassi
-    data_incasso = models.DateField(null=True, blank=True)
+    stato = models.CharField(max_length=200, null=True)
     importo = models.FloatField(null=True)
 
     # FOREIGN KEYS DI FATTURE
     contratto = models.ForeignKey('Contratti', null=True, on_delete=models.SET_NULL)
-    parte_passiva = models.ForeignKey(Aziende, null=True, on_delete=models.SET_NULL)
-    commessa = models.ForeignKey(Commessa, null=True, on_delete=models.SET_NULL)
+
 
 
     def __str__(self):

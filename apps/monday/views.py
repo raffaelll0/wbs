@@ -15,6 +15,7 @@ def monday_data_view(request):
     table_data_contratti = fetch_mcd_contratti()
     table_data_servizi = fetch_mcd_servizi()
     table_data_contatti = fetch_mcd_contatti()
+    table_data_fatture = fetch_mdc_fatture()
 
     write_aziende(table_data_aziende)
     write_commesse(table_data_commesse)
@@ -31,9 +32,12 @@ def monday_data_view(request):
     write_contatti(table_data_contatti)
     contatti_com_az_pair()
 
+    write_fatture(table_data_fatture)
+    fatt_contr_pair()
 
 
-    return render(request, 'monday_data.html', {'table_data': table_data_commesse, 'table_data_aziende': table_data_aziende, 'table_data_task': table_data_task, 'table_data_contratti': table_data_contratti, 'table_data_servizi': table_data_servizi, 'table_data_contatti': table_data_contatti})
+
+    return render(request, 'monday_data.html', {'table_data': table_data_commesse, 'table_data_aziende': table_data_aziende, 'table_data_task': table_data_task, 'table_data_contratti': table_data_contratti, 'table_data_servizi': table_data_servizi, 'table_data_contatti': table_data_contatti, 'table_data_fatture': table_data_fatture})
 
 # def monday_data_aziende(request):
 #     table_data_aziende = dump_aziende()

@@ -90,7 +90,7 @@ urlpatterns += AziendeView.get_urls()
 
 class FattureView(CRUDView):
     model = apps.neapolitanmods.models.Fatture
-    fields = ["id_monday", "nome", "contratto", "commessa", "parte_passiva", "anno_competenza", "data_incasso", "importo"]
+    fields = ["id_monday", "nome", "stato", "importo", "contratto", "anno_competenza"]
 urlpatterns += FattureView.get_urls()
 
 # class IncassiView(CRUDView):

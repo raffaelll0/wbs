@@ -275,7 +275,6 @@ def fetch_mdc_task():
 
     return table_data_task
 
-
 def fetch_mcd_contratti():
     # CHIAVE DI ACCESSO PER COLLEGARSI A MONDAY
     apiKey_contratti = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjIzNDMyMjYwNSwiYWFpIjoxMSwidWlkIjozNDE1NDI1NCwiaWFkIjoiMjAyMy0wMi0wM1QwODozOTowNy4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6NzI3OTI3OCwicmduIjoidXNlMSJ9.ocXATYHEMQUjny7c3VRGwM7T0N4xwzC7fBGloNzuVYM"
@@ -528,11 +527,11 @@ def fetch_mcd_contatti():
                         if value_contatti is not None:
                             try:
                                 # Parse the JSON string in 'value_text'
-                                data_contratti = json.loads(value_contatti)
+                                data_contatti = json.loads(value_contatti)
                                 # print("Parsed JSON data:", data)
 
-                                if "linkedPulseIds" in data_contratti:
-                                    linked_pulse_ids = data_contratti["linkedPulseIds"]
+                                if "linkedPulseIds" in data_contatti:
+                                    linked_pulse_ids = data_contatti["linkedPulseIds"]
 
                                     if linked_pulse_ids:
                                         linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
@@ -551,11 +550,11 @@ def fetch_mcd_contatti():
                         if value_contatti is not None:
                             try:
                                 # Parse the JSON string in 'value_text'
-                                data_contratti = json.loads(value_contatti)
+                                data_contatti = json.loads(value_contatti)
                                 # print("Parsed JSON data:", data)
 
-                                if "linkedPulseIds" in data_contratti:
-                                    linked_pulse_ids = data_contratti["linkedPulseIds"]
+                                if "linkedPulseIds" in data_contatti:
+                                    linked_pulse_ids = data_contatti["linkedPulseIds"]
 
                                     if linked_pulse_ids:
                                         linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
@@ -574,6 +573,85 @@ def fetch_mcd_contatti():
             #GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_contatti.append(row_contatti)
     return table_data_contatti
+
+
+def fetch_mdc_fatture():
+    # CHIAVE DI ACCESSO PER COLLEGARSI A MONDAY
+    apiKey_fatture = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjIzNDMyMjYwNSwiYWFpIjoxMSwidWlkIjozNDE1NDI1NCwiaWFkIjoiMjAyMy0wMi0wM1QwODozOTowNy4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6NzI3OTI3OCwicmduIjoidXNlMSJ9.ocXATYHEMQUjny7c3VRGwM7T0N4xwzC7fBGloNzuVYM"
+    apiUrl_fatture = "https://api.monday.com/v2"
+    headers_fatture = {"Authorization": apiKey_fatture}
+
+    # CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
+    table_data_fatture = [
+        ['NAME', 'IMPORTO', 'STATO PAGAMENTO', 'CONTRATTO', 'ID CONTRATTO', 'ANNO COMPETENZA', 'ID MONDAY']]
+
+    # CODICE DELLA BOARD DI NOME GESTIONE COMMESSE
+    id_board_fatture = '952669855'
+
+    # ALL' INTERNO DELLA QUERY ANDIAMO A SPECIFICARE I VALORI CHE CI SERVONO, AD ESEMPIO dup__of_priorit_ INDICA LA PRIORITA' (BASSA,MEDIA,ALTA)
+    query_fatture = ' { boards (ids: ' + id_board_fatture + ' ) { items (limit:10) { id  name column_values (ids: ["name", "id_elemento", "collega_schede", "stato_1", "cliente_1", "collega_schede9", "sotto_elementi_importo0", "sotto_elementi_stato_pagamento_incasso" ]) { id type value text } }  } }'
+    data_fatture = {'query': query_fatture}
+
+    # FACCIAMO UNA RICHIESTA JSON
+    r_fatture = requests.post(url=apiUrl_fatture, json=data_fatture, headers=headers_fatture)
+    # print(r_fatture.json())
+    # DEFINIAMO IL NOSTRO JSON CON LA VARIABILE response_data
+    response_data_fatture = r_fatture.json()
+    # ESSENDO UN DIZIONARIO SELEZIONIAMO I DATI CHE CI SERVIRANNO, OVVERO DATA E BOARDS
+    boards_fatture = response_data_fatture['data']['boards']
+
+    # ITERIAMO DA I BOARD E PER ITEM,
+    for board_fatture in boards_fatture:
+        items_fatture = board_fatture['items']
+
+        # PRENDIAMO I VALORI DI OGNI ITEM
+        for item_fatture in items_fatture:
+            item_name_fatture = item_fatture['name']
+            column_fatture = item_fatture['column_values']
+
+            # ANDIAMO A DEFINIRE ROW, OVVERO UNA LISTA CON PRESENTE SOLTANTO IL NOME, PER ADESSO...
+            row_fatture = [item_name_fatture]
+
+            # PER OGNI VALORE PRESENTE IN item['column_values'] PRENDIAMO SOLTANTO IL VALORE TEXT
+            for values_fatture in column_fatture:
+                value_text_fatture = values_fatture['text']
+                value_id_fatture = values_fatture['id']
+                value_fatture = values_fatture['value']
+
+                # SE L'ID DEL VALORE è PRESENTE IN QUESTA LISTA, ALLORA AGGIUNGI A ROW
+                if value_id_fatture in ["name", "id_elemento", "collega_schede", "stato_1", "cliente_1",
+                                        "collega_schede9", "sotto_elementi_importo0",
+                                        "sotto_elementi_stato_pagamento_incasso"]:
+                    row_fatture.append(value_text_fatture)
+
+                    if value_id_fatture == "collega_schede":
+                        linked_pulse_id = None
+                        if value_fatture is not None:
+                            try:
+                                # Parse the JSON string in 'value_text'
+                                data_fatture = json.loads(value_fatture)
+                                # print("Parsed JSON data:", data)
+
+                                if "linkedPulseIds" in data_fatture:
+                                    linked_pulse_ids = data_fatture["linkedPulseIds"]
+
+                                    if linked_pulse_ids:
+                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
+                                        # print("Linked Pulse ID: ", linked_pulse_id)
+
+                            except json.JSONDecodeError:
+                                pass
+                        row_fatture.append(linked_pulse_id)
+                    else:
+                        pass
+                        # APPEND None TO row IF linked_pulse_id IS None
+                        # row.append(None)
+
+            # GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
+            table_data_fatture.append(row_fatture)
+    return table_data_fatture
+
+
 
 
 
@@ -903,6 +981,55 @@ def contatti_com_az_pair():
                     # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
                     contatto.azienda_di_appartenenza = matching_azienda
                     contatto.save()
+
+
+def write_fatture(table_data_fatture):
+    for row_fatture in table_data_fatture[1:]:  # Start from index 1 to skip headers
+        nome_fatture = row_fatture[0]
+        importo_fatture = row_fatture[1]
+        stato_fatture = row_fatture[2]
+
+        id_commmessa_fatture = row_fatture[3]
+        id_contratto_fatture = row_fatture[4]
+
+        anno_fatture = row_fatture[5]
+        id_fatture = row_fatture[6]
+
+        importo_fatture = importo_fatture if importo_fatture else 0
+        if anno_fatture.isdigit():
+            anno_fatture = anno_fatture
+        else:
+            anno_fatture = None
+
+        fatture_instance, created = Fatture.objects.get_or_create(nome=nome_fatture,
+                                                                  id_monday=id_fatture,
+                                                                  stato=stato_fatture,
+                                                                  importo=importo_fatture,
+                                                                  id_contratti=id_contratto_fatture,
+                                                                  anno_competenza=anno_fatture,
+                                                                  )
+
+        fatture_instance.save()
+
+
+def fatt_contr_pair():
+
+    fatture = Fatture.objects.all()
+
+    for fattura in fatture:
+        id_contratti = fattura.id_contratti
+
+        if id_contratti:
+            # Find the matching Aziende instance by id_monday
+            matching_contratto= Contratti.objects.filter(id_monday=id_contratti).first()
+
+            if matching_contratto:
+                # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
+                fattura.contratto = matching_contratto
+                fattura.save()
+
+
+
 
 
 
