@@ -19,12 +19,17 @@ def monday_data_view(request):
     write_aziende(table_data_aziende)
     write_commesse(table_data_commesse)
     commesse_aziende_pair()
-    task_commesse_pair()
 
     write_task(table_data_task)
+    task_commesse_pair()
+
     write_contratti(table_data_contratti)
+    contratti_com_att_pass_pair()
+
     write_servizi(table_data_servizi)
+
     write_contatti(table_data_contatti)
+    contatti_com_az_pair()
 
 
 

@@ -275,6 +275,7 @@ def fetch_mdc_task():
 
     return table_data_task
 
+
 def fetch_mcd_contratti():
     # CHIAVE DI ACCESSO PER COLLEGARSI A MONDAY
     apiKey_contratti = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjIzNDMyMjYwNSwiYWFpIjoxMSwidWlkIjozNDE1NDI1NCwiaWFkIjoiMjAyMy0wMi0wM1QwODozOTowNy4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6NzI3OTI3OCwicmduIjoidXNlMSJ9.ocXATYHEMQUjny7c3VRGwM7T0N4xwzC7fBGloNzuVYM"
@@ -283,7 +284,9 @@ def fetch_mcd_contratti():
 
     # TASK
     # CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
-    table_data_contratti = [['NAME', 'ULTIMO AGGIORNAMENTO', 'DATA CREAZIONE', "COMMESSA", "SOGGETTO ATTIVO", "SOGGETTO PASSIVO", "ID"]]
+    table_data_contratti = [
+        ['NAME', 'ULTIMO AGGIORNAMENTO', 'DATA CREAZIONE', "COMMESSA", "ID COMMESSA", "SOGGETTO ATTIVO", "ID ATTIVO ",
+         "SOGGETTO PASSIVO", "ID PASSIVO", "ID MONDAY"]]
 
     # CODICE DELLA BOARD DI NOME SPORTELLO STUDIO
     id_board_contratti = '1641120827'
@@ -297,7 +300,7 @@ def fetch_mcd_contratti():
 
     # DEFINIAMO IL NOSTRO JSON CON LA VARIABILE response_data
     response_data_contratti = r_contratti.json()
-    #print(r_contratti.json())
+    # print(r_contratti.json())
 
     # ESSENDO UN DIZIONARIO SELEZIONIAMO I DATI CHE CI SERVIRANNO, OVVERO DATA E BOARDS
     boards_contratti = response_data_contratti['data']['boards']
@@ -308,7 +311,7 @@ def fetch_mcd_contratti():
 
         # PRENDIAMO I VALORI DI OGNI ITEM
         for item_contratti in items_contratti:
-            # item_id_contratti = item_contratti['id']
+            item_id_contratti = item_contratti['id']
             item_name_contratti = item_contratti['name']
             column_contratti = item_contratti['column_values']
             # print(f"Name: {item_name}")
@@ -320,11 +323,82 @@ def fetch_mcd_contratti():
             # PER OGNI VALORE PRESENTE IN item['column_values'] PRENDIAMO SOLTANTO IL VALORE TEXT
             for values_contratti in column_contratti:
                 value_text_contratti = values_contratti['text']
+                value_id_contratti = values_contratti['id']
+                value_contratti = values_contratti['value']
                 # print(f"TEXT: {value_text}")
 
                 # SE L'ID DEL VALORE è PRESENTE IN QUESTA LISTA, ALLORA AGGIUNGI A ROW
-                if values_contratti['id'] in ["id_elemento0", "ultimo_aggiornamento", "registro_di_creazione_1", "collega_schede7", "collega_schede", "collega_schede0"]:
+                if value_id_contratti in ["id_elemento0", "ultimo_aggiornamento", "registro_di_creazione_1",
+                                          "collega_schede7", "collega_schede", "collega_schede0"]:
                     row_contratti.append(values_contratti['text'])
+                    ###################ID COMMESSA
+                    if value_id_contratti == "collega_schede7":
+                        linked_pulse_id = None
+                        if value_contratti is not None:
+                            try:
+                                # Parse the JSON string in 'value_text'
+                                data_contratti = json.loads(value_contratti)
+                                # print("Parsed JSON data:", data)
+
+                                if "linkedPulseIds" in data_contratti:
+                                    linked_pulse_ids = data_contratti["linkedPulseIds"]
+
+                                    if linked_pulse_ids:
+                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
+                                        # print("Linked Pulse ID: ", linked_pulse_id)
+
+                            except json.JSONDecodeError:
+                                pass
+                        row_contratti.append(linked_pulse_id)
+                    else:
+                        pass
+                        # APPEND None TO row IF linked_pulse_id IS None
+                        # row.append(None)
+                    ###################ID PARTE ATTIVA
+                    if value_id_contratti == "collega_schede":
+                        linked_pulse_id = None
+                        if value_contratti is not None:
+                            try:
+                                # Parse the JSON string in 'value_text'
+                                data_contratti = json.loads(value_contratti)
+                                # print("Parsed JSON data:", data)
+
+                                if "linkedPulseIds" in data_contratti:
+                                    linked_pulse_ids = data_contratti["linkedPulseIds"]
+
+                                    if linked_pulse_ids:
+                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
+                                        # print("Linked Pulse ID: ", linked_pulse_id)
+
+                            except json.JSONDecodeError:
+                                pass
+                        row_contratti.append(linked_pulse_id)
+                    else:
+                        pass
+                        # APPEND None TO row IF linked_pulse_id IS None
+                        # row.append(None)
+                    ##################ID PARTE PASSIVA
+
+                    if value_id_contratti == "collega_schede0":
+                        linked_pulse_id = None
+                        if value_contratti is not None:
+                            try:
+                                # Parse the JSON string in 'value_text'
+                                data_contratti = json.loads(value_contratti)
+                                # print("Parsed JSON data:", data)
+
+                                if "linkedPulseIds" in data_contratti:
+                                    linked_pulse_ids = data_contratti["linkedPulseIds"]
+
+                                    if linked_pulse_ids:
+                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
+                                        # print("Linked Pulse ID: ", linked_pulse_id)
+
+                            except json.JSONDecodeError:
+                                pass
+                        row_contratti.append(linked_pulse_id)
+                    else:
+                        pass
 
             # print("\n")
             # GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
@@ -406,7 +480,7 @@ def fetch_mcd_contatti():
     headers_contatti = {"Authorization": apiKey_contatti}
 
     #CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
-    table_data_contatti = [['NAME', 'IN QUALITA DI', 'LEGALE RAPPRESENTANTE', 'AZIENDE', 'ID']]
+    table_data_contatti = [['NAME', 'IN QUALITA DI', 'AZIENDE', 'ID AZIENDE', 'COMMESSE', 'ID COMMESSE', 'ID MONDAY']]
 
     #CODICE DELLA BOARD DI NOME GESTIONE COMMESSE
     id_board_contatti= '1986160544'
@@ -414,7 +488,7 @@ def fetch_mcd_contatti():
 
 
     #ALL' INTERNO DELLA QUERY ANDIAMO A SPECIFICARE I VALORI CHE CI SERVONO, AD ESEMPIO dup__of_priorit_ INDICA LA PRIORITA' (BASSA,MEDIA,ALTA)
-    query_contatti= ' { boards (ids: '+id_board_contatti+' ) { items (limit:10) { id  name column_values (ids: ["text0", "collega_schede", "dup__of_legale_rappresentante_di", "collega_schede3", "id_elemento"]) { id type value text } }  } }'
+    query_contatti= ' { boards (ids: '+id_board_contatti+' ) { items (limit:10) { id  name column_values (ids: ["text0", "collega_schede3", "collega_schede4", "id_elemento"]) { id type value text } }  } }'
     data_contatti = {'query' : query_contatti}
 
     #FACCIAMO UNA RICHIESTA JSON
@@ -446,18 +520,60 @@ def fetch_mcd_contatti():
 
 
                 #SE L'ID DEL VALORE è PRESENTE IN QUESTA LISTA, ALLORA AGGIUNGI A ROW
-                if value_id_contatti in ["text0", "collega_schede", "dup__of_legale_rappresentante_di", "collega_schede3", "id_elemento"]:
+                if value_id_contatti in ["text0", "collega_schede3", "collega_schede4", "id_elemento"]:
                     row_contatti.append(value_text_contatti)
+
+                    if value_id_contatti == "collega_schede3":
+                        linked_pulse_id = None
+                        if value_contatti is not None:
+                            try:
+                                # Parse the JSON string in 'value_text'
+                                data_contratti = json.loads(value_contatti)
+                                # print("Parsed JSON data:", data)
+
+                                if "linkedPulseIds" in data_contratti:
+                                    linked_pulse_ids = data_contratti["linkedPulseIds"]
+
+                                    if linked_pulse_ids:
+                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
+                                        # print("Linked Pulse ID: ", linked_pulse_id)
+
+                            except json.JSONDecodeError:
+                                pass
+                        row_contatti.append(linked_pulse_id)
+                    else:
+                        pass
+                        # APPEND None TO row IF linked_pulse_id IS None
+                        # row.append(None)
+
+                    if value_id_contatti == "collega_schede4":
+                        linked_pulse_id = None
+                        if value_contatti is not None:
+                            try:
+                                # Parse the JSON string in 'value_text'
+                                data_contratti = json.loads(value_contatti)
+                                # print("Parsed JSON data:", data)
+
+                                if "linkedPulseIds" in data_contratti:
+                                    linked_pulse_ids = data_contratti["linkedPulseIds"]
+
+                                    if linked_pulse_ids:
+                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
+                                        # print("Linked Pulse ID: ", linked_pulse_id)
+
+                            except json.JSONDecodeError:
+                                pass
+                        row_contatti.append(linked_pulse_id)
+                    else:
+                        pass
+                        # APPEND None TO row IF linked_pulse_id IS None
+                        # row.append(None)
 
 
 
             #GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_contatti.append(row_contatti)
     return table_data_contatti
-
-    #FACCIAMO USCIRE IN OUTPUT LA TABELLA CON INTERFACCIA
-
-    #print(tabulate(table_data_contatti, headers="firstrow", tablefmt="fancy_grid"))
 
 
 
@@ -564,35 +680,15 @@ def write_commesse(table_data_commesse):
                 id_monday = int(id_monday)
             except ValueError:
                 continue
+
 ##########################################################################################
-        # aziende_queryset = Aziende.objects.filter(
-        #     Q(id_monday=aziende_value) | Q(nome=aziende_name)
-        # )
-        #
-        # # Iterate over the queryset
-        # for aziende_instance in aziende_queryset:
-        #     c, created = Commessa.objects.get_or_create(
-        #         nome=nome,
-        #         id_monday=id_monday,
-        #         tipologia=tipo,
-        #         ultimo_aggiornamento=date,
-        #         priorità=priority
-        #     )
-        #
-        #     # Set the cliente_finale field of the Commessa instance
-        #     c.cliente_finale = aziende_instance
-        #
-        #     # Save the Commessa instance
-        #     c.save()
-
-
 
         c, created = Commessa.objects.get_or_create(nome=nome,
                                                      id_monday=id_monday,
                                                      tipologia=tipo,
                                                      ultimo_aggiornamento=date,
                                                      priorità=priority,
-                                                    id_azienda=aziende_value)
+                                                     id_azienda=aziende_value)
         c.save()
 
 def commesse_aziende_pair():
@@ -613,20 +709,6 @@ def commesse_aziende_pair():
 
 ###########################################################################################################
 
-    # for commessa_instance in Commessa.objects.all():
-    #
-    #     aziende_value = commessa_instance.id_azienda
-    #
-    #     # Check if id_commessa_az is not None
-    #     if aziende_value is not None:
-    #         # Find the matching Commessa instance based on id_monday
-    #         matching_azienda = Aziende.objects.filter(id_monday=aziende_value).first()
-    #
-    #         # If a matching Azienda instance is found, assign it to  field of Commesse
-    #         if matching_azienda is not None:
-    #             commessa_instance.cliente_finale.add(matching_azienda)
-    #             commessa_instance.save()
-
     commesse = Commessa.objects.all()
 
     for commessa in commesse:
@@ -640,6 +722,8 @@ def commesse_aziende_pair():
                 # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
                 commessa.cliente_finale = matching_aziende
                 commessa.save()
+
+
 
 def write_task(table_data_task):
 
@@ -689,32 +773,136 @@ def task_commesse_pair():
 
 
 
-
-
-
 def write_contratti(table_data_contratti):
     for row_contratti in table_data_contratti[1:]:  # Start from index 1 to skip headers
         nome_contratti = row_contratti[0]
         ultimo_aggiornamento_contratti = row_contratti[1][0:10]
         data_creazione_contratti = row_contratti[2][0:10]
-        id_contratti = row_contratti[6]
+        id_commessa_contratti = row_contratti[4]
+        id_attivo_contratti = row_contratti[6]
+        id_passivo_contratti = row_contratti[8]
+        id_contratti = row_contratti[9]
 
         contratti_instance, created = Contratti.objects.get_or_create(nome=nome_contratti,
-                                                                 id_monday=id_contratti,
-                                                                 ultimo_aggiornamento=ultimo_aggiornamento_contratti,
-                                                                 data_creazione=data_creazione_contratti,
-                                                                 )
+                                                                      id_monday=id_contratti,
+                                                                      ultimo_aggiornamento=ultimo_aggiornamento_contratti,
+                                                                      data_creazione=data_creazione_contratti,
+                                                                      id_commessa=id_commessa_contratti,
+                                                                      id_attivo=id_attivo_contratti,
+                                                                      id_passivo=id_passivo_contratti)
         contratti_instance.save()
+
+def contratti_com_att_pass_pair():
+
+    for contratti_instance in Contratti.objects.all():
+
+        id_commessa_contratti = contratti_instance.id_commessa
+
+        # Check if id_commessa_az is not None
+        if id_commessa_contratti is not None:
+            # Find the matching Commessa instance based on id_monday
+            matching_commessa = Commessa.objects.filter(id_monday=id_commessa_contratti).first()
+
+            # If a matching Commessa instance is found, assign it to commesse field of Aziende
+            if matching_commessa is not None:
+                contratti_instance.commesse.add(matching_commessa)
+                contratti_instance.save()
+
+
+
+    contratti = Contratti.objects.all()
+
+    for contratto in contratti:
+        id_attivo = contratto.id_attivo
+
+        if id_attivo:
+            # Find the matching Aziende instance by id_monday
+            matching_attivo = Aziende.objects.filter(id_monday=id_attivo).first()
+
+            if matching_attivo:
+                # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
+                contratto.sog_attivo = matching_attivo
+                contratto.save()
+
+    for contratto in contratti:
+        id_passivo = contratto.id_passivo
+
+        if id_passivo:
+            # Find the matching Aziende instance by id_monday
+            matching_passivo = Aziende.objects.filter(id_monday=id_passivo).first()
+
+            if matching_passivo:
+                # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
+                contratto.sog_passivo = matching_passivo
+                contratto.save()
+
+
 
 
 def write_servizi(table_data_servizi):
-    for row in table_data_servizi[1:]:  # Start from index 1 to skip headers
-        nome = row[0]
+    for row_servizi in table_data_servizi[1:]:  # Start from index 1 to skip headers
+        nome_servizi = row_servizi[0]
+        tipo_servizi = row_servizi[2]
+        link_servizi = row_servizi[3]
+        documenti_servizi = row_servizi[4]
+        id_servizi = row_servizi[5]
+
+        servizi_instance, created = Servizio.objects.get_or_create(nome=nome_servizi,
+                                                          tipologia=tipo_servizi,
+                                                          link_fonte=link_servizi,
+                                                          documenti=documenti_servizi,
+                                                          id_monday=id_servizi)
+
+        servizi_instance.save()
+
+
 
 
 def write_contatti(table_data_contatti):
-    for row in table_data_contatti[1:]:  # Start from index 1 to skip headers
-        nome = row[0]
+    for row_contatti in table_data_contatti[1:]:  # Start from index 1 to skip headers
+        nome_contatti = row_contatti[0]
+        qualita_contatti = row_contatti[1]
+        id_aziende_contatti = row_contatti[3]
+        id_commesse_contatti = row_contatti[5]
+        id_contatti = row_contatti[6]
+
+        contatti_instance, created = Contatti.objects.get_or_create(nome=nome_contatti,
+                                                                    in_qualita_di=qualita_contatti,
+                                                                    id_azienda=id_aziende_contatti,
+                                                                    id_commessa=id_commesse_contatti,
+                                                                    id_monday=id_contatti
+                                                                    )
+        contatti_instance.save()
+
+def contatti_com_az_pair():
+
+    for contatti_instance in Contatti.objects.all():
+
+        id_commessa_contatti = contatti_instance.id_commessa
+
+        # Check if id_commessa_az is not None
+        if id_commessa_contatti is not None:
+            # Find the matching Commessa instance based on id_monday
+            matching_commessa = Commessa.objects.filter(id_monday=id_commessa_contatti).first()
+
+            # If a matching Commessa instance is found, assign it to commesse field of Aziende
+            if matching_commessa is not None:
+                contatti_instance.commesse.add(matching_commessa)
+                contatti_instance.save()
+
+        contatti = Contatti.objects.all()
+
+        for contatto in contatti:
+            id_azienda = contatto.id_azienda
+
+            if id_azienda:
+                # Find the matching Aziende instance by id_monday
+                matching_azienda = Aziende.objects.filter(id_monday=id_azienda).first()
+
+                if matching_azienda:
+                    # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
+                    contatto.azienda_di_appartenenza = matching_azienda
+                    contatto.save()
 
 
 

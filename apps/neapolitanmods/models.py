@@ -62,7 +62,6 @@ class Task(models.Model):
     id_commessa = models.BigIntegerField(null=True)
 
     # FOREIGN KEYS DI COMMESSA
-    id_contatti = models.ForeignKey('Contatti', null=True, on_delete=models.SET_NULL)
     responsabile = models.ForeignKey('Utente', null=True, on_delete=models.SET_NULL)
     commesse = models.ManyToManyField(Commessa)
 
@@ -80,8 +79,12 @@ class Contratti(models.Model):
     ultimo_aggiornamento = models.DateField(null=True, blank=True)
     data_creazione = models.DateField(null=True, blank=True)
 
+    id_commessa = models.BigIntegerField(null=True)
+    id_attivo = models.BigIntegerField(null=True)
+    id_passivo = models.BigIntegerField(null=True)
+
     # FOREIGN KEYS DI CONTRATTI
-    id_commessa = models.ForeignKey('Commessa', null=True, on_delete=models.SET_NULL)
+    commesse = models.ManyToManyField(Commessa)
     sog_passivo = models.ForeignKey('Aziende', related_name='contratti_passivi', null=True, on_delete=models.SET_NULL)
     sog_attivo = models.ForeignKey('Aziende', related_name='contratti_attivi', null=True, on_delete=models.SET_NULL)
 
@@ -173,25 +176,13 @@ class Fatture(models.Model):
 
 #funzionante
 class Servizio(models.Model):
-    COMMERCIALE = "CO"
-    FORMAZIONE = "FO"
-    PROCACCIAMENTO = "PR"
 
-    TIPOLOGIA_COMMESSA = [
-        (COMMERCIALE, "Commerciale"),
-        (FORMAZIONE, "Formazione 4.0"),
-        (PROCACCIAMENTO, "Procacciamento"),
-    ]
     nome = models.CharField(max_length=200, null=True)
     id_monday = models.BigIntegerField(null=True)
 
-    tipologia = models.CharField(
-        max_length=2,
-        choices=TIPOLOGIA_COMMESSA,
-        null=True
-    )
+    tipologia = models.CharField(max_length=200,null=True)
     link_fonte = models.TextField(max_length=200, null=True)
-    documenti = models.FileField(null=True)
+    documenti = models.TextField(null=True)
 
     # FOREIGN KEYS DI SERVIZIO
     referente = models.ForeignKey(Utente, null=True, on_delete=models.SET_NULL)
@@ -207,12 +198,14 @@ class Contatti(models.Model):
     nome = models.CharField(max_length=200, null=True)
     id_monday = models.BigIntegerField(null=True)
     in_qualita_di = models.CharField(max_length=200, null=True)
-    #titolare_effettivo = models.ForeignKey(Aziende, null=True, on_delete=models.SET_NULL)
-    #azienda_di_appartenenza = models.ForeignKey(Aziende, null=True, on_delete=models.SET_NULL)
+
     commesse = models.ManyToManyField(Commessa)
 
+    id_azienda = models.BigIntegerField(null=True)
+    id_commessa = models.BigIntegerField(null=True)
+
     # FOREIGN KEYS DI CONTATTI
-    legale_rappresentante = models.ForeignKey(Aziende, null=True, on_delete=models.SET_NULL)
+    azienda_di_appartenenza = models.ForeignKey(Aziende, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.nome
