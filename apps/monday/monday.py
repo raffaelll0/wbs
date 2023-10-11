@@ -651,6 +651,49 @@ def fetch_mdc_fatture():
             table_data_fatture.append(row_fatture)
     return table_data_fatture
 
+def fetch_mdc_utenti():
+
+    #CHIAVE DI ACCESSO PER COLLEGARSI A MONDAY
+    apiKey_utenti = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjIzNDMyMjYwNSwiYWFpIjoxMSwidWlkIjozNDE1NDI1NCwiaWFkIjoiMjAyMy0wMi0wM1QwODozOTowNy4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6NzI3OTI3OCwicmduIjoidXNlMSJ9.ocXATYHEMQUjny7c3VRGwM7T0N4xwzC7fBGloNzuVYM"
+    apiUrl_utenti = "https://api.monday.com/v2"
+    headers_utenti = {"Authorization": apiKey_utenti}
+
+    #CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
+    table_data_utenti = [['NAME', 'EMAIL','ID']]
+
+    #CODICE DELLA BOARD DI NOME GESTIONE COMMESSE
+    id_board_utenti = '952669855'
+
+
+
+    #ALL' INTERNO DELLA QUERY ANDIAMO A SPECIFICARE I VALORI CHE CI SERVONO, AD ESEMPIO dup__of_priorit_ INDICA LA PRIORITA' (BASSA,MEDIA,ALTA)
+    query_utenti= ' {users(limit: 10) {    name email  id   }  }'
+    data_utenti = {'query' : query_utenti}
+
+
+    #FACCIAMO UNA RICHIESTA JSON
+    r_utenti = requests.post(url=apiUrl_utenti, json=data_utenti, headers=headers_utenti)
+    #print(r_utenti.json())
+    #DEFINIAMO IL NOSTRO JSON CON LA VARIABILE response_data
+    response_data_utenti = r_utenti.json()
+    #print(response_data_utenti)
+
+    #ESSENDO UN DIZIONARIO SELEZIONIAMO I DATI CHE CI SERVIRANNO, OVVERO USERS
+    users = response_data_utenti['data']['users']
+
+    for user in users:
+        name_utenti = user['name']
+        email_utenti = user['email']
+        id_utenti = user['id']
+
+        # Create a row and append the values
+        row_utenti = [name_utenti, email_utenti, id_utenti]
+
+        # Append the row to the table data
+        table_data_utenti.append(row_utenti)
+
+    return table_data_utenti
+
 
 
 
@@ -1027,6 +1070,21 @@ def fatt_contr_pair():
                 # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
                 fattura.contratto = matching_contratto
                 fattura.save()
+
+
+def write_utenti(table_data_utenti):
+
+    for row_utenti in table_data_utenti[1:]:  # Start from index 1 to skip headers
+        nome_utenti = row_utenti[0]
+        email_utenti = row_utenti[1]
+        id_utenti = row_utenti[2]
+
+        utenti_instance,created = Utente.objects.get_or_create(nome=nome_utenti,
+                                                        email=email_utenti,
+                                                       id_monday=id_utenti)
+
+        utenti_instance.save()
+
 
 
 

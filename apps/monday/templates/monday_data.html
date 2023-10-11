@@ -150,6 +150,26 @@
 
 
 
+<head>
+    <title>Utenti</title>
+</head>
+
+<body>
+    <h1>Utenti</h1>
+    <table>
+        <tbody>
+            {% for row_7 in table_data_utenti %}
+            <tr>
+                {% for element_7 in row_7 %}
+                <td>{{ element_7 }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+
 
 
 </body>
