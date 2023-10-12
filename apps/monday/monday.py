@@ -6,6 +6,7 @@ from tabulate import tabulate
 from django.db import models
 from django.db.models import Q
 from ..neapolitanmods.models import *  # Import all models
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def fetch_mdc_commesse():
@@ -89,13 +90,9 @@ def fetch_mdc_commesse():
             #GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data.append(row)
     return table_data
-    #for row in table_data:
-        #print("\t".join(str(cell) for cell in row))
-
     #FACCIAMO USCIRE IN OUTPUT LA TABELLA CON INTERFACCIA
     #print(tabulate(table_data, headers="firstrow", tablefmt="fancy_grid"))
-    #print(table_data[1])
-    #print(row[4][0:10])
+
 
 def fetch_mdc_aziende():
     # AZIENDE
@@ -105,7 +102,7 @@ def fetch_mdc_aziende():
     headers_aziende = {"Authorization": apiKey_aziende}
 
     # CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
-    table_data_aziende = [['NAME', 'RESPONSABILE', "COMMESSE", "ID COMMESSA", "PARTITA IVA", "CODICE FISCALE",  "ID"]]
+    table_data_aziende = [['NAME', 'RESPONSABILE', 'ID RESPONSABILE', "COMMESSE", "ID COMMESSA", "PARTITA IVA", "CODICE FISCALE",  "ID"]]
 
     # CODICE DELLA BOARD DI NOME LISTA CLIENTI
     id_board_aziende = '813707989'
@@ -142,37 +139,50 @@ def fetch_mdc_aziende():
                 value_text_aziende = values_aziende['text']
                 value_id_aziende = values_aziende['id']
                 value_aziende = values_aziende['value']
-                # print(f"TEXT: {value_text}")
+
 
                 # SE L'ID DEL VALORE è PRESENTE IN QUESTA LISTA, ALLORA AGGIUNGI A ROW
                 if value_id_aziende in ["id_elemento", "persone", "link_to_attivit_", "p_iva1", "testo9", "collega_schede0"]:
                     row_aziende.append(value_text_aziende)
 
-                    # print(f"Processing value_id: {value_id}, value: {value}")
+                    linked_pulse_ids = []
+
+                    # Process linked pulse IDs
                     if value_id_aziende == "link_to_attivit_":
                         linked_pulse_id = None
                         if value_aziende is not None:
                             try:
                                 # Parse the JSON string in 'value_text'
                                 data_aziende = json.loads(value_aziende)
-                                # print("Parsed JSON data:", data)
 
                                 if "linkedPulseIds" in data_aziende:
-                                    linked_pulse_ids = data_aziende["linkedPulseIds"]
+                                    linked_pulse_ids = [linked_pulse.get("linkedPulseId") for linked_pulse in data_aziende["linkedPulseIds"]]
+                                    id_list_str = ', '.join(map(str, linked_pulse_ids))
+                                    row_aziende.append(id_list_str)
 
-                                    if linked_pulse_ids:
-                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
-                                        #print("Linked Pulse ID: ", linked_pulse_id)
+                                else:
+                                    row_aziende.append(None)
+
 
                             except json.JSONDecodeError:
+
                                 pass
-                        row_aziende.append(linked_pulse_id)
-                    else:
-                        pass
-                        # APPEND None TO row IF linked_pulse_id IS None
-                         #row.append(None)
+                        else:
+                            row_aziende.append(None)
 
 
+                    if value_id_aziende == "persone":
+                        if value_aziende is not None:
+                            persone_data = json.loads(value_aziende)
+                            if "personsAndTeams" in persone_data:
+                                id_list = [person_info.get("id") for person_info in persone_data["personsAndTeams"]]
+                                # Convert the list of IDs to a comma-separated string
+                                id_list_str = ', '.join(map(str, id_list))
+                                row_aziende.append(id_list_str)
+                            else:
+                                row_aziende.append(None)
+                        else:
+                            row_aziende.append(None)
 
 
 
@@ -180,13 +190,6 @@ def fetch_mdc_aziende():
             # GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_aziende.append(row_aziende)
     return table_data_aziende
-    # for row in table_data:
-    # print("\t".join(str(cell) for cell in row))
-
-    # FACCIAMO USCIRE IN OUTPUT LA TABELLA CON INTERFACCIA
-    #print(tabulate(table_data, headers="firstrow", tablefmt="fancy_grid"))
-    # print(table_data[1])
-    # print(row[4][0:10])
 
 def fetch_mdc_task():
     # CHIAVE DI ACCESSO PER COLLEGARSI A MONDAY
@@ -197,8 +200,7 @@ def fetch_mdc_task():
     # TASK
     # CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
     table_data_task = [
-        ['NAME', 'TIPO', "PRIORITA'", 'DATA CREAZIONE', "DATA SOLLECITO", "RESPONSABILE", "COMMESSA", 'ID COMMESSA',
-         'ID']]
+        ['NAME', 'TIPO', "PRIORITA'", 'DATA CREAZIONE', "DATA SOLLECITO", "RESPONSABILE", "ID RESPONSABILE", "COMMESSA", 'ID COMMESSA', 'ID']]
 
     # CODICE DELLA BOARD DI NOME SPORTELLO STUDIO
     id_board_task = '985523481'
@@ -212,7 +214,7 @@ def fetch_mdc_task():
 
     # DEFINIAMO IL NOSTRO JSON CON LA VARIABILE response_data
     response_data_task = r_task.json()
-    # print(r_task.json())
+    #print(r_task.json())
 
     # ESSENDO UN DIZIONARIO SELEZIONIAMO I DATI CHE CI SERVIRANNO, OVVERO DATA E BOARDS
     boards_task = response_data_task['data']['boards']
@@ -241,33 +243,40 @@ def fetch_mdc_task():
                 # print(f"TEXT: {value_text_task}")
 
                 # SE L'ID DEL VALORE è PRESENTE IN QUESTA LISTA, ALLORA AGGIUNGI A ROW
-                if values_task['id'] in ["id_elemento", "stato_19", "registro_di_creazione8", "data", "persone",
-                                         "priorit_", "collega_schede"]:
+                if values_task['id'] in ["id_elemento", "stato_19", "registro_di_creazione8", "data", "persone", "priorit_", "collega_schede"]:
                     row_task.append(values_task['text'])
 
                     if value_id_task == "collega_schede":
-                        linked_pulse_id = None
+                        linked_pulse_ids = []  # Initialize an empty list to store pulseIds
 
                         if value_task is not None:
                             try:
-                                # Parse the JSON string in 'value_text'
                                 data_task = json.loads(value_task)
-                                # print("Parsed JSON data:", data)
 
                                 if "linkedPulseIds" in data_task:
                                     linked_pulse_ids = data_task["linkedPulseIds"]
 
-                                    if linked_pulse_ids:
-                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
-                                        # print("Linked Pulse ID: ", linked_pulse_id)
-
                             except json.JSONDecodeError:
                                 pass
-                        row_task.append(linked_pulse_id)
+
+                        # Concatenate the pulseIds into a comma-separated string
+                        pulse_id_str = ",".join(
+                            str(linked_pulse.get("linkedPulseId")) for linked_pulse in linked_pulse_ids)
+                        row_task.append(pulse_id_str)
                     else:
                         pass
-                        # APPEND None TO row IF linked_pulse_id IS None
-                        # row.append(None)
+
+
+
+                    if value_id_task == "persone" and value_task is not None:
+                        persone_data = json.loads(value_task)
+                        if "personsAndTeams" in persone_data:
+                            id_list = [person_info.get("id") for person_info in persone_data["personsAndTeams"]]
+                            row_task.extend(id_list)
+                    elif value_id_task == "persone" and value_task is None:
+                        # Handle the case when 'value_task' is None, you can append a default value or handle it as needed
+                        row_task.append(None)
+
 
             # print("\n")
             # GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
@@ -418,7 +427,7 @@ def fetch_mcd_servizi():
     headers_servizi = {"Authorization": apiKey_servizi}
 
     #CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
-    table_data_servizi = [['NAME', 'UTENTE', 'TIPOLOGIA', 'LINK FONTE', 'DOCUMENTI', 'ID']]
+    table_data_servizi = [['NAME', 'UTENTE', 'ID UTENTE', 'TIPOLOGIA', 'LINK FONTE', 'DOCUMENTI', 'ID']]
 
     #CODICE DELLA BOARD DI NOME GESTIONE COMMESSE
     id_board_servizi= '937015673'
@@ -461,15 +470,26 @@ def fetch_mcd_servizi():
                 if value_id_servizi in ["id_elemento", "persone", "stato_1", "link", "file"]:
                     row_servizi.append(value_text_servizi)
 
+                    if value_id_servizi == "persone":
+                        if value_servizi is not None:
+                            persone_data = json.loads(value_servizi)
+                            if "personsAndTeams" in persone_data:
+                                id_list = [person_info.get("id") for person_info in persone_data["personsAndTeams"]]
+                                # Convert the list of IDs to a comma-separated string
+                                id_list_str = ', '.join(map(str, id_list))
+                                row_servizi.append(id_list_str)
+                            else:
+                                row_servizi.append(None)
+                        else:
+                            row_servizi.append(None)
+
+
 
 
             #GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_servizi.append(row_servizi)
     return table_data_servizi
 
-    #FACCIAMO USCIRE IN OUTPUT LA TABELLA CON INTERFACCIA
-
-    #print(tabulate(table_data_servizio, headers="firstrow", tablefmt="fancy_grid"))
 
 def fetch_mcd_contatti():
 
@@ -523,50 +543,45 @@ def fetch_mcd_contatti():
                     row_contatti.append(value_text_contatti)
 
                     if value_id_contatti == "collega_schede3":
-                        linked_pulse_id = None
+                        linked_pulse_ids = []
                         if value_contatti is not None:
                             try:
-                                # Parse the JSON string in 'value_text'
                                 data_contatti = json.loads(value_contatti)
-                                # print("Parsed JSON data:", data)
 
                                 if "linkedPulseIds" in data_contatti:
-                                    linked_pulse_ids = data_contatti["linkedPulseIds"]
-
-                                    if linked_pulse_ids:
-                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
-                                        # print("Linked Pulse ID: ", linked_pulse_id)
+                                    linked_pulse_ids = [linked_pulse.get("linkedPulseId") for linked_pulse in
+                                                        data_contatti["linkedPulseIds"]]
 
                             except json.JSONDecodeError:
                                 pass
-                        row_contatti.append(linked_pulse_id)
+
+                        id_list_str = ', '.join(map(str, linked_pulse_ids))
+                        row_contatti.append(id_list_str)
                     else:
                         pass
-                        # APPEND None TO row IF linked_pulse_id IS None
-                        # row.append(None)
+                        # row_contatti.append(None)
+
+
+
 
                     if value_id_contatti == "collega_schede4":
-                        linked_pulse_id = None
+                        linked_pulse_ids = []
                         if value_contatti is not None:
                             try:
-                                # Parse the JSON string in 'value_text'
                                 data_contatti = json.loads(value_contatti)
-                                # print("Parsed JSON data:", data)
 
                                 if "linkedPulseIds" in data_contatti:
-                                    linked_pulse_ids = data_contatti["linkedPulseIds"]
-
-                                    if linked_pulse_ids:
-                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
-                                        # print("Linked Pulse ID: ", linked_pulse_id)
+                                    linked_pulse_ids = [linked_pulse.get("linkedPulseId") for linked_pulse in
+                                                        data_contatti["linkedPulseIds"]]
 
                             except json.JSONDecodeError:
                                 pass
-                        row_contatti.append(linked_pulse_id)
+
+                        id_list_str = ', '.join(map(str, linked_pulse_ids))
+                        row_contatti.append(id_list_str)
                     else:
                         pass
-                        # APPEND None TO row IF linked_pulse_id IS None
-                        # row.append(None)
+                        #row_contatti.append(None)
 
 
 
@@ -699,8 +714,18 @@ def fetch_mdc_utenti():
 
 
 
+def write_utenti(table_data_utenti):
 
+    for row_utenti in table_data_utenti[1:]:  # Start from index 1 to skip headers
+        nome_utenti = row_utenti[0]
+        email_utenti = row_utenti[1]
+        id_utenti = row_utenti[2]
 
+        utenti_instance,created = Utente.objects.get_or_create(nome=nome_utenti,
+                                                               email=email_utenti,
+                                                               id_monday=id_utenti)
+
+        utenti_instance.save()
 
 
 def write_aziende(table_data_aziende):
@@ -714,11 +739,12 @@ def write_aziende(table_data_aziende):
     for row_az in table_data_aziende[1:]:  # Start from index 1 to skip headers
         #mappo variabili
         nome_az = row_az[0]
-        nome_com = row_az[2]
-        id_commessa_az = row_az[3]
-        p_iva_az = row_az[4]
-        cod_fis_az = row_az[5]
-        id_monday_az = row_az[6]
+        id_responsabile = row_az[2]
+        id_commessa_az = row_az[4]
+        p_iva_az = row_az[5]
+        cod_fis_az = row_az[6]
+        id_monday_az = row_az[7]
+
         #elaboro variabili che  necessitano elaborazione
 
         if p_iva_az != '':
@@ -737,35 +763,60 @@ def write_aziende(table_data_aziende):
             except ValueError:
                 continue
 
+                # Check if id_responsabile is not None before splitting
+        if id_responsabile is not None:
+            # Convert the id_responsabile value into a list of integers
+            id_responsabile_list = [int(id) for id in id_responsabile.split(",")]
 
-#################################################################################################
 
 
-        # aziende_queryset = Aziende.objects.filter(
-        #     Q(id_monday=id_monday_az) | Q(nome=nome_az)
-        # )
-        #
-        # # Iterate over the queryset
-        # for aziende_instance in aziende_queryset:
-        #     commessa_instance, created = Commessa.objects.get_or_create(
-        #         id_monday=id_commessa_az,
-        #         nome=nome_com
-        #     )
-        #
-        #     # Add the Commessa instance to the aziende's commesse relationship
-        #     aziende_instance.commesse.add(commessa_instance)
-        #
-        #     # Save the aziende instance
-        #     aziende_instance.save()
-####################################################################################################
+        else:
+            id_responsabile_list = []  # or any default value you prefer
+
+
+        if id_commessa_az is not None:
+            # Convert the id_responsabile value into a list of integers
+            id_commessa_az_list = [int(id) for id in id_commessa_az.split(",")]
+
+        else:
+
+            id_commessa_az_list = []  # or any default value you prefer
+
+
+
 
 
         a, created = Aziende.objects.get_or_create(nome=nome_az,
                                                    id_monday=id_monday_az,
                                                    cod_fis=cod_fis_az,
-                                                   p_iva=p_iva_az,
-                                                   id_commessa=id_commessa_az)
+                                                   p_iva=p_iva_az
+                                                   #id_utente=id_responsabile
+                                                   )
+
+        # Add responsible users to the ManyToMany field
+        for utente_id in id_responsabile_list:
+            try:
+                responsabile = Utente.objects.get(id_monday=utente_id)
+                a.responsabile.add(responsabile)
+            except ObjectDoesNotExist:
+                # Handle the case where the Utente doesn't exist
+                # You can log an error, skip, or take other appropriate actions
+                pass
+
+
+        # Add responsible users to the ManyToMany field
+        for com_id in id_commessa_az_list:
+            try:
+                com = Commessa.objects.get(id_monday=com_id)
+                a.commesse.add(com)
+            except ObjectDoesNotExist:
+                 # Handle the case where the Utente doesn't exist
+                # You can log an error, skip, or take other appropriate actions
+                pass
+
+
         a.save()
+
 
 def write_commesse(table_data_commesse):
     """
@@ -844,6 +895,23 @@ def commesse_aziende_pair():
                 commessa.cliente_finale = matching_aziende
                 commessa.save()
 
+def aziende_utenti_pair():
+    aziende = Aziende.objects.all()
+
+    for azienda in aziende:
+        id_responsabile = azienda.id_utente
+
+        if id_responsabile:
+            # Find the matching Aziende instance by id_monday
+            matching_utente = Utente.objects.filter(id_monday=id_responsabile).first()
+
+            if matching_utente:
+                # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
+                azienda.responsabile = matching_utente
+                azienda.save()
+
+
+
 
 
 def write_task(table_data_task):
@@ -863,8 +931,19 @@ def write_task(table_data_task):
         data_creazione_task = row_task[3][0:10]
         data_sollecito_task = row_task[4][0:10]
         responsabile_task = row_task[5]
-        id_commessa_task = row_task[7]
-        id_task = row_task[8]
+        id_responsabile = row_task[6]
+        id_commessa_task = row_task[8]
+        id_task = row_task[9]
+
+
+        if id_commessa_task is not None and id_commessa_task.strip():  # Check for None and non-empty
+            # Convert the id_commessa_task value into a list of integers
+            id_commessa_task_list = [int(id) for id in id_commessa_task.split(",")]
+
+        else:
+
+            id_commessa_task_list = []  # or any default value you prefer
+
 
 
         t, created = Task.objects.get_or_create(nome=nome_task,
@@ -873,8 +952,25 @@ def write_task(table_data_task):
                                                 data_creazione=data_creazione_task,
                                                 sollecito=data_sollecito_task,
                                                 priorità=priorita_task,
-                                                id_commessa=id_commessa_task)
+                                                id_utente=id_responsabile
+                                                )
+
+
+        # Add responsible users to the ManyToMany field
+        for com_id in id_commessa_task_list:
+            try:
+                com = Commessa.objects.get(id_monday=com_id)
+                t.commesse.add(com)
+            except ObjectDoesNotExist:
+                # Handle the case where the Utente doesn't exist
+                # You can log an error, skip, or take other appropriate actions
+                pass
+
+
         t.save()
+
+
+
 
 def task_commesse_pair():
 
@@ -891,6 +987,21 @@ def task_commesse_pair():
             if matching_commessa is not None:
                 task_instance.commesse.add(matching_commessa)
                 task_instance.save()
+
+def task_utenti_pair():
+    tasks = Task.objects.all()
+
+    for task in tasks:
+        id_responsabile = task.id_utente
+
+        if id_responsabile:
+            # Find the matching Aziende instance by id_monday
+            matching_utente = Utente.objects.filter(id_monday=id_responsabile).first()
+
+            if matching_utente:
+                # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
+                task.responsabile = matching_utente
+                task.save()
 
 
 
@@ -963,16 +1074,38 @@ def contratti_com_att_pass_pair():
 def write_servizi(table_data_servizi):
     for row_servizi in table_data_servizi[1:]:  # Start from index 1 to skip headers
         nome_servizi = row_servizi[0]
-        tipo_servizi = row_servizi[2]
-        link_servizi = row_servizi[3]
-        documenti_servizi = row_servizi[4]
-        id_servizi = row_servizi[5]
+        tipo_servizi = row_servizi[3]
+        link_servizi = row_servizi[4]
+        documenti_servizi = row_servizi[5]
+        id_servizi = row_servizi[6]
+        id_responsabile = row_servizi[2]
+
+            # Check if id_responsabile is not None before splitting
+        if id_responsabile is not None:
+            # Convert the id_responsabile value into a list of integers
+            id_responsabile_list = [int(id) for id in id_responsabile.split(",")]
+
+        else:
+            id_responsabile_list = []  # or any default value you prefer
+
+
 
         servizi_instance, created = Servizio.objects.get_or_create(nome=nome_servizi,
-                                                          tipologia=tipo_servizi,
-                                                          link_fonte=link_servizi,
-                                                          documenti=documenti_servizi,
-                                                          id_monday=id_servizi)
+                                                              tipologia=tipo_servizi,
+                                                              link_fonte=link_servizi,
+                                                              documenti=documenti_servizi,
+                                                              id_monday=id_servizi
+                                                              )
+
+        # Add responsible users to the ManyToMany field
+        for utente_id in id_responsabile_list:
+            try:
+                responsabile = Utente.objects.get(id_monday=utente_id)
+                servizi_instance.responsabile.add(responsabile)
+            except ObjectDoesNotExist:
+                # Handle the case where the Utente doesn't exist
+                # You can log an error, skip, or take other appropriate actions
+                pass
 
         servizi_instance.save()
 
@@ -987,12 +1120,58 @@ def write_contatti(table_data_contatti):
         id_commesse_contatti = row_contatti[5]
         id_contatti = row_contatti[6]
 
+
+        if id_commesse_contatti is not None and id_commesse_contatti.strip():
+            # Convert the id_responsabile value into a list of integers
+            id_commesse_contatti_list = [int(id) for id in id_commesse_contatti.split(",")]
+
+        else:
+
+            id_commesse_contatti_list = []  # or any default value you prefer
+
+
+
+        if id_aziende_contatti is not None and id_aziende_contatti.strip():
+            # Convert the id_responsabile value into a list of integers
+            id_aziende_contatti_list = [int(id) for id in id_aziende_contatti.split(",")]
+
+        else:
+
+            id_aziende_contatti_list = []  # or any default value you prefer
+
+
+
+
         contatti_instance, created = Contatti.objects.get_or_create(nome=nome_contatti,
                                                                     in_qualita_di=qualita_contatti,
-                                                                    id_azienda=id_aziende_contatti,
-                                                                    id_commessa=id_commesse_contatti,
+                                                                    #id_azienda=id_aziende_contatti,
+                                                                    #id_commessa=id_commesse_contatti,
                                                                     id_monday=id_contatti
                                                                     )
+
+        # Add responsible users to the ManyToMany field
+        for com_id in id_commesse_contatti_list:
+            try:
+                com = Commessa.objects.get(id_monday=com_id)
+                contatti_instance.commesse.add(com)
+            except ObjectDoesNotExist:
+                # Handle the case where the Utente doesn't exist
+                # You can log an error, skip, or take other appropriate actions
+                pass
+
+
+        # Add responsible users to the ManyToMany field
+        for az_id in id_aziende_contatti_list:
+            try:
+                az = Aziende.objects.get(id_monday=az_id)
+                contatti_instance.azienda_di_appartenenza.add(az)
+
+            except ObjectDoesNotExist:
+                # Handle the case where the Utente doesn't exist
+                # You can log an error, skip, or take other appropriate actions
+                pass
+
+
         contatti_instance.save()
 
 def contatti_com_az_pair():
@@ -1072,18 +1251,7 @@ def fatt_contr_pair():
                 fattura.save()
 
 
-def write_utenti(table_data_utenti):
 
-    for row_utenti in table_data_utenti[1:]:  # Start from index 1 to skip headers
-        nome_utenti = row_utenti[0]
-        email_utenti = row_utenti[1]
-        id_utenti = row_utenti[2]
-
-        utenti_instance,created = Utente.objects.get_or_create(nome=nome_utenti,
-                                                        email=email_utenti,
-                                                       id_monday=id_utenti)
-
-        utenti_instance.save()
 
 
 

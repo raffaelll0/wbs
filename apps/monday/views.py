@@ -21,9 +21,11 @@ def monday_data_view(request):
     write_aziende(table_data_aziende)
     write_commesse(table_data_commesse)
     commesse_aziende_pair()
+    aziende_utenti_pair()
 
     write_task(table_data_task)
     task_commesse_pair()
+    task_utenti_pair()
 
     write_contratti(table_data_contratti)
     contratti_com_att_pass_pair()

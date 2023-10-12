@@ -60,6 +60,7 @@ class Task(models.Model):
     sollecito = models.DateField(null=True, blank=True)
     priorità = models.CharField(max_length=200, null=True)
     id_commessa = models.BigIntegerField(null=True)
+    id_utente = models.BigIntegerField(null=True)
 
     # FOREIGN KEYS DI COMMESSA
     responsabile = models.ForeignKey('Utente', null=True, on_delete=models.SET_NULL)
@@ -104,9 +105,10 @@ class Aziende(models.Model):
     p_iva = models.BigIntegerField(null=True)
     cod_fis = models.TextField(max_length=200, null=True)
     id_commessa = models.BigIntegerField(null=True)
+    id_utente = models.BigIntegerField(null=True)
 
     # FOREIGN KEYS DI AZIENDE
-    responsabile = models.ForeignKey('Utente', null=True, on_delete=models.SET_NULL)
+    responsabile = models.ManyToManyField(Utente)
 
 
 
@@ -168,9 +170,10 @@ class Servizio(models.Model):
     tipologia = models.CharField(max_length=200,null=True)
     link_fonte = models.TextField(max_length=200, null=True)
     documenti = models.TextField(null=True)
+    id_utente = models.BigIntegerField(null=True)
 
     # FOREIGN KEYS DI SERVIZIO
-    referente = models.ForeignKey(Utente, null=True, on_delete=models.SET_NULL)
+    responsabile = models.ManyToManyField(Utente)
 
     def __str__(self):
         return self.nome
@@ -190,7 +193,7 @@ class Contatti(models.Model):
     id_commessa = models.BigIntegerField(null=True)
 
     # FOREIGN KEYS DI CONTATTI
-    azienda_di_appartenenza = models.ForeignKey(Aziende, null=True, on_delete=models.SET_NULL)
+    azienda_di_appartenenza = models.ManyToManyField(Aziende)
 
     def __str__(self):
         return self.nome

@@ -101,7 +101,7 @@ urlpatterns += FattureView.get_urls()
 
 class ServizioView(CRUDView):
     model = apps.neapolitanmods.models.Servizio
-    fields = ["id_monday", "nome", "referente", "tipologia", "link_fonte", "documenti"]
+    fields = ["id_monday", "nome", "responsabile", "tipologia", "link_fonte", "documenti", "id_utente"]
 urlpatterns += ServizioView.get_urls()
 
 class ContattiView(CRUDView):
