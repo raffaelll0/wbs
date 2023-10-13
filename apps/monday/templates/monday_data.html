@@ -1,177 +1,217 @@
-<!-- my_template.html -->
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>commessa</title>
+    <title>Carica Dati</title>
+    <style>
+        /* Center the button */
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Style the button */
+        .refresh-button {
+            background-color: blue;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-
 <body>
-    <h1>Commessa</h1>
+    <div class="center">
+        <button class="refresh-button" onclick="loadData()">Carica Dati da MONDAY.COM</button>
+        <div id="message"></div>
+    </div>
 
-    <table>
-        <tbody>
-            {% for row in table_data %}
-            <tr>
-                {% for element in row %}
-                <td>{{ element }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <script>
+        function loadData() {
+            window.location.href = window.location.href + '?load_data=1';
 
-<head>
-    <title>Aziende</title>
-</head>
-
-<body>
-    <h1>Aziende</h1>
-    <table>
-        <tbody>
-            {% for row_1 in table_data_aziende %}
-            <tr>
-                {% for element_1 in row_1 %}
-                <td>{{ element_1 }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-
-<head>
-    <title>Task</title>
-</head>
-
-<body>
-    <h1>Task</h1>
-    <table>
-        <tbody>
-            {% for row_2 in table_data_task %}
-            <tr>
-                {% for element_2 in row_2 %}
-                <td>{{ element_2 }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-
-
-
-<head>
-    <title>Contratti</title>
-</head>
-
-<body>
-    <h1>Contratti</h1>
-    <table>
-        <tbody>
-            {% for row_3 in table_data_contratti %}
-            <tr>
-                {% for element_3 in row_3 %}
-                <td>{{ element_3 }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-
-
-
-
-
-<head>
-    <title>Servizi</title>
-</head>
-
-<body>
-    <h1>Servizi</h1>
-    <table>
-        <tbody>
-            {% for row_4 in table_data_servizi %}
-            <tr>
-                {% for element_4 in row_4 %}
-                <td>{{ element_4 }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-
-
-
-<head>
-    <title>Contatti</title>
-</head>
-
-<body>
-    <h1>Contatti</h1>
-    <table>
-        <tbody>
-            {% for row_5 in table_data_contatti %}
-            <tr>
-                {% for element_5 in row_5 %}
-                <td>{{ element_5 }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-
-
-
-
-
-
-<head>
-    <title>Fatture</title>
-</head>
-
-<body>
-    <h1>Fatture</h1>
-    <table>
-        <tbody>
-            {% for row_6 in table_data_fatture %}
-            <tr>
-                {% for element_6 in row_6 %}
-                <td>{{ element_6 }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-
-
-
-<head>
-    <title>Utenti</title>
-</head>
-
-<body>
-    <h1>Utenti</h1>
-    <table>
-        <tbody>
-            {% for row_7 in table_data_utenti %}
-            <tr>
-                {% for element_7 in row_7 %}
-                <td>{{ element_7 }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-
-
-
-
+        }
+        if (window.location.search.includes('load_data=1')) {
+            window.location.href = window.location.href.split('?')[0];
+        }
+    </script>
 </body>
 </html>
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+
+<!--<head>-->
+<!--    <title>commessa</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <h1>Commessa</h1>-->
+
+<!--    <table>-->
+<!--        <tbody>-->
+<!--            {% for row in table_data %}-->
+<!--            <tr>-->
+<!--                {% for element in row %}-->
+<!--                <td>{{ element }}</td>-->
+<!--                {% endfor %}-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+
+<!--<head>-->
+<!--    <title>Aziende</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <h1>Aziende</h1>-->
+<!--    <table>-->
+<!--        <tbody>-->
+<!--            {% for row_1 in table_data_aziende %}-->
+<!--            <tr>-->
+<!--                {% for element_1 in row_1 %}-->
+<!--                <td>{{ element_1 }}</td>-->
+<!--                {% endfor %}-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</body>-->
+
+<!--<head>-->
+<!--    <title>Task</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <h1>Task</h1>-->
+<!--    <table>-->
+<!--        <tbody>-->
+<!--            {% for row_2 in table_data_task %}-->
+<!--            <tr>-->
+<!--                {% for element_2 in row_2 %}-->
+<!--                <td>{{ element_2 }}</td>-->
+<!--                {% endfor %}-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</body>-->
+
+
+
+<!--<head>-->
+<!--    <title>Contratti</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <h1>Contratti</h1>-->
+<!--    <table>-->
+<!--        <tbody>-->
+<!--            {% for row_3 in table_data_contratti %}-->
+<!--            <tr>-->
+<!--                {% for element_3 in row_3 %}-->
+<!--                <td>{{ element_3 }}</td>-->
+<!--                {% endfor %}-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</body>-->
+
+
+
+
+
+<!--<head>-->
+<!--    <title>Servizi</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <h1>Servizi</h1>-->
+<!--    <table>-->
+<!--        <tbody>-->
+<!--            {% for row_4 in table_data_servizi %}-->
+<!--            <tr>-->
+<!--                {% for element_4 in row_4 %}-->
+<!--                <td>{{ element_4 }}</td>-->
+<!--                {% endfor %}-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</body>-->
+
+
+
+<!--<head>-->
+<!--    <title>Contatti</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <h1>Contatti</h1>-->
+<!--    <table>-->
+<!--        <tbody>-->
+<!--            {% for row_5 in table_data_contatti %}-->
+<!--            <tr>-->
+<!--                {% for element_5 in row_5 %}-->
+<!--                <td>{{ element_5 }}</td>-->
+<!--                {% endfor %}-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</body>-->
+
+
+
+
+
+
+<!--<head>-->
+<!--    <title>Fatture</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <h1>Fatture</h1>-->
+<!--    <table>-->
+<!--        <tbody>-->
+<!--            {% for row_6 in table_data_fatture %}-->
+<!--            <tr>-->
+<!--                {% for element_6 in row_6 %}-->
+<!--                <td>{{ element_6 }}</td>-->
+<!--                {% endfor %}-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</body>-->
+
+
+
+<!--<head>-->
+<!--    <title>Utenti</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <h1>Utenti</h1>-->
+<!--    <table>-->
+<!--        <tbody>-->
+<!--            {% for row_7 in table_data_utenti %}-->
+<!--            <tr>-->
+<!--                {% for element_7 in row_7 %}-->
+<!--                <td>{{ element_7 }}</td>-->
+<!--                {% endfor %}-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</body>-->
+
+
 

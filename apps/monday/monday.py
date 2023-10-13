@@ -81,18 +81,11 @@ def fetch_mdc_commesse():
                     else:
                         pass
 
-
-
-
-
-
-                        #print("\n")
             #GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data.append(row)
     return table_data
     #FACCIAMO USCIRE IN OUTPUT LA TABELLA CON INTERFACCIA
     #print(tabulate(table_data, headers="firstrow", tablefmt="fancy_grid"))
-
 
 def fetch_mdc_aziende():
     # AZIENDE
@@ -125,11 +118,8 @@ def fetch_mdc_aziende():
 
         # PRENDIAMO I VALORI DI OGNI ITEM
         for item_aziende in items_aziende:
-            # item_id = item['id']
             item_name_aziende = item_aziende['name']
             column_aziende = item_aziende['column_values']
-            # print(f"Name: {item_name}")
-            # print(f"ID: {item_id}, Name: {item_name}")
 
             # ANDIAMO A DEFINIRE ROW, OVVERO UNA LISTA CON PRESENTE SOLTANTO IL NOME, PER ADESSO...
             row_aziende = [item_name_aziende]
@@ -163,7 +153,6 @@ def fetch_mdc_aziende():
                                 else:
                                     row_aziende.append(None)
 
-
                             except json.JSONDecodeError:
 
                                 pass
@@ -185,8 +174,6 @@ def fetch_mdc_aziende():
                             row_aziende.append(None)
 
 
-
-                        # print("\n")
             # GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_aziende.append(row_aziende)
     return table_data_aziende
@@ -199,8 +186,7 @@ def fetch_mdc_task():
 
     # TASK
     # CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
-    table_data_task = [
-        ['NAME', 'TIPO', "PRIORITA'", 'DATA CREAZIONE', "DATA SOLLECITO", "RESPONSABILE", "ID RESPONSABILE", "COMMESSA", 'ID COMMESSA', 'ID']]
+    table_data_task = [['NAME', 'TIPO', "PRIORITA'", 'DATA CREAZIONE', "DATA SOLLECITO", "RESPONSABILE", "ID RESPONSABILE", "COMMESSA", 'ID COMMESSA', 'ID']]
 
     # CODICE DELLA BOARD DI NOME SPORTELLO STUDIO
     id_board_task = '985523481'
@@ -228,8 +214,7 @@ def fetch_mdc_task():
             # item_id_task = item_task['id']
             item_name_task = item_task['name']
             column_task = item_task['column_values']
-            # print(f"Name: {item_name}")
-            # print(f"ID: {item_id}, Name: {item_name}")
+
 
             # ANDIAMO A DEFINIRE ROW, OVVERO UNA LISTA CON PRESENTE SOLTANTO IL NOME, PER ADESSO...
             row_task = [item_name_task]
@@ -239,8 +224,6 @@ def fetch_mdc_task():
                 value_text_task = values_task['text']
                 value_id_task = values_task['id']
                 value_task = values_task['value']
-
-                # print(f"TEXT: {value_text_task}")
 
                 # SE L'ID DEL VALORE è PRESENTE IN QUESTA LISTA, ALLORA AGGIUNGI A ROW
                 if values_task['id'] in ["id_elemento", "stato_19", "registro_di_creazione8", "data", "persone", "priorit_", "collega_schede"]:
@@ -267,7 +250,6 @@ def fetch_mdc_task():
                         pass
 
 
-
                     if value_id_task == "persone" and value_task is not None:
                         persone_data = json.loads(value_task)
                         if "personsAndTeams" in persone_data:
@@ -278,7 +260,6 @@ def fetch_mdc_task():
                         row_task.append(None)
 
 
-            # print("\n")
             # GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_task.append(row_task)
 
@@ -290,17 +271,15 @@ def fetch_mcd_contratti():
     apiUrl_contratti = "https://api.monday.com/v2"
     headers_contratti = {"Authorization": apiKey_contratti}
 
-    # TASK
+
     # CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
-    table_data_contratti = [
-        ['NAME', 'ULTIMO AGGIORNAMENTO', 'DATA CREAZIONE', "COMMESSA", "ID COMMESSA", "SOGGETTO ATTIVO", "ID ATTIVO ",
-         "SOGGETTO PASSIVO", "ID PASSIVO", "ID MONDAY"]]
+    table_data_contratti = [['NAME', 'ULTIMO AGGIORNAMENTO', 'DATA CREAZIONE', "COMMESSA", "ID COMMESSA", "SOGGETTO ATTIVO", "ID ATTIVO ", "SOGGETTO PASSIVO", "ID PASSIVO", "ID MONDAY"]]
 
     # CODICE DELLA BOARD DI NOME SPORTELLO STUDIO
     id_board_contratti = '1641120827'
 
     # ALL' INTERNO DELLA QUERY ANDIAMO A SPECIFICARE I VALORI CHE CI SERVONO
-    query_contratti = ' { boards (ids: ' + id_board_contratti + ' ) { items (limit:10) { id  name column_values (ids: ["id_elemento0", "ultimo_aggiornamento", "registro_di_creazione_1", "collega_schede7", "collega_schede", "collega_schede0"]) { id type value text } }  } }'
+    query_contratti = ' { boards (ids: ' + id_board_contratti + ') { items (limit:10) { id  name column_values (ids: ["id_elemento0", "ultimo_aggiornamento", "registro_di_creazione_1", "collega_schede7", "collega_schede", "collega_schede0"]) { id type value text } }  } }'
     data_contratti = {'query': query_contratti}
 
     # FACCIAMO UNA RICHIESTA JSON
@@ -308,7 +287,6 @@ def fetch_mcd_contratti():
 
     # DEFINIAMO IL NOSTRO JSON CON LA VARIABILE response_data
     response_data_contratti = r_contratti.json()
-    # print(r_contratti.json())
 
     # ESSENDO UN DIZIONARIO SELEZIONIAMO I DATI CHE CI SERVIRANNO, OVVERO DATA E BOARDS
     boards_contratti = response_data_contratti['data']['boards']
@@ -322,8 +300,6 @@ def fetch_mcd_contratti():
             item_id_contratti = item_contratti['id']
             item_name_contratti = item_contratti['name']
             column_contratti = item_contratti['column_values']
-            # print(f"Name: {item_name}")
-            # print(f"ID: {item_id}, Name: {item_name}")
 
             # ANDIAMO A DEFINIRE ROW, OVVERO UNA LISTA CON PRESENTE SOLTANTO IL NOME, PER ADESSO...
             row_contratti = [item_name_contratti]
@@ -333,74 +309,68 @@ def fetch_mcd_contratti():
                 value_text_contratti = values_contratti['text']
                 value_id_contratti = values_contratti['id']
                 value_contratti = values_contratti['value']
-                # print(f"TEXT: {value_text}")
+
 
                 # SE L'ID DEL VALORE è PRESENTE IN QUESTA LISTA, ALLORA AGGIUNGI A ROW
-                if value_id_contratti in ["id_elemento0", "ultimo_aggiornamento", "registro_di_creazione_1",
-                                          "collega_schede7", "collega_schede", "collega_schede0"]:
+                if value_id_contratti in ["id_elemento0", "ultimo_aggiornamento", "registro_di_creazione_1", "collega_schede7", "collega_schede", "collega_schede0"]:
                     row_contratti.append(values_contratti['text'])
-                    ###################ID COMMESSA
+
+                    #ID COMMESSA
+                    # Process linked pulse IDs
                     if value_id_contratti == "collega_schede7":
                         linked_pulse_id = None
                         if value_contratti is not None:
                             try:
                                 # Parse the JSON string in 'value_text'
-                                data_contratti = json.loads(value_contratti)
-                                # print("Parsed JSON data:", data)
+                                data_contratti= json.loads(value_contratti)
 
                                 if "linkedPulseIds" in data_contratti:
-                                    linked_pulse_ids = data_contratti["linkedPulseIds"]
+                                    linked_pulse_ids = [linked_pulse.get("linkedPulseId") for linked_pulse in data_contratti["linkedPulseIds"]]
+                                    id_list_str = ', '.join(map(str, linked_pulse_ids))
+                                    row_contratti.append(id_list_str)
 
-                                    if linked_pulse_ids:
-                                        linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
-                                        # print("Linked Pulse ID: ", linked_pulse_id)
+                                else:
+                                    row_contratti.append(None)
 
                             except json.JSONDecodeError:
+
                                 pass
-                        row_contratti.append(linked_pulse_id)
-                    else:
-                        pass
-                        # APPEND None TO row IF linked_pulse_id IS None
-                        # row.append(None)
-                    ###################ID PARTE ATTIVA
+                        else:
+                            row_contratti.append(None)
+
+                    #ID PARTE ATTIVA
                     if value_id_contratti == "collega_schede":
                         linked_pulse_id = None
                         if value_contratti is not None:
                             try:
                                 # Parse the JSON string in 'value_text'
                                 data_contratti = json.loads(value_contratti)
-                                # print("Parsed JSON data:", data)
 
                                 if "linkedPulseIds" in data_contratti:
                                     linked_pulse_ids = data_contratti["linkedPulseIds"]
 
                                     if linked_pulse_ids:
                                         linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
-                                        # print("Linked Pulse ID: ", linked_pulse_id)
 
                             except json.JSONDecodeError:
                                 pass
                         row_contratti.append(linked_pulse_id)
                     else:
                         pass
-                        # APPEND None TO row IF linked_pulse_id IS None
-                        # row.append(None)
-                    ##################ID PARTE PASSIVA
 
+                    #ID PARTE PASSIVA
                     if value_id_contratti == "collega_schede0":
                         linked_pulse_id = None
                         if value_contratti is not None:
                             try:
                                 # Parse the JSON string in 'value_text'
                                 data_contratti = json.loads(value_contratti)
-                                # print("Parsed JSON data:", data)
 
                                 if "linkedPulseIds" in data_contratti:
                                     linked_pulse_ids = data_contratti["linkedPulseIds"]
 
                                     if linked_pulse_ids:
                                         linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
-                                        # print("Linked Pulse ID: ", linked_pulse_id)
 
                             except json.JSONDecodeError:
                                 pass
@@ -408,16 +378,11 @@ def fetch_mcd_contratti():
                     else:
                         pass
 
-            # print("\n")
+
             # GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_contratti.append(row_contratti)
 
     return table_data_contratti
-    # for row in table_data:
-    # print("\t".join(str(cell) for cell in row))
-
-    # FACCIAMO USCIRE IN OUTPUT LA TABELLA CON INTERFACCIA
-    #print(tabulate(table_data_contratti, headers="firstrow", tablefmt="fancy_grid"))
 
 def fetch_mcd_servizi():
 
@@ -440,7 +405,7 @@ def fetch_mcd_servizi():
 
     #FACCIAMO UNA RICHIESTA JSON
     r_servizi = requests.post(url=apiUrl_servizi, json=data_servizi, headers=headers_servizi)
-    #print(r_servizio.json())
+
     #DEFINIAMO IL NOSTRO JSON CON LA VARIABILE response_data
     response_data_servizi = r_servizi.json()
     #ESSENDO UN DIZIONARIO SELEZIONIAMO I DATI CHE CI SERVIRANNO, OVVERO DATA E BOARDS
@@ -483,13 +448,9 @@ def fetch_mcd_servizi():
                         else:
                             row_servizi.append(None)
 
-
-
-
             #GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_servizi.append(row_servizi)
     return table_data_servizi
-
 
 def fetch_mcd_contatti():
 
@@ -512,7 +473,6 @@ def fetch_mcd_contatti():
 
     #FACCIAMO UNA RICHIESTA JSON
     r_contatti = requests.post(url=apiUrl_contatti, json=data_contatti, headers=headers_contatti)
-    #print(r_servizio.json())
     #DEFINIAMO IL NOSTRO JSON CON LA VARIABILE response_data
     response_data_contatti = r_contatti.json()
     #ESSENDO UN DIZIONARIO SELEZIONIAMO I DATI CHE CI SERVIRANNO, OVVERO DATA E BOARDS
@@ -559,9 +519,6 @@ def fetch_mcd_contatti():
                         row_contatti.append(id_list_str)
                     else:
                         pass
-                        # row_contatti.append(None)
-
-
 
 
                     if value_id_contatti == "collega_schede4":
@@ -581,14 +538,11 @@ def fetch_mcd_contatti():
                         row_contatti.append(id_list_str)
                     else:
                         pass
-                        #row_contatti.append(None)
-
 
 
             #GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_contatti.append(row_contatti)
     return table_data_contatti
-
 
 def fetch_mdc_fatture():
     # CHIAVE DI ACCESSO PER COLLEGARSI A MONDAY
@@ -597,8 +551,7 @@ def fetch_mdc_fatture():
     headers_fatture = {"Authorization": apiKey_fatture}
 
     # CREAZIONE DI UNA TABELLA CON I TITOLI, IN SEGUITO VERRANNO AGGIUNTI I VALORI CON LA FUNZIONE APPEND
-    table_data_fatture = [
-        ['NAME', 'IMPORTO', 'STATO PAGAMENTO', 'CONTRATTO', 'ID CONTRATTO', 'ANNO COMPETENZA', 'ID MONDAY']]
+    table_data_fatture = [['NAME', 'IMPORTO', 'STATO PAGAMENTO', 'CONTRATTO', 'ID CONTRATTO', 'ANNO COMPETENZA', 'ID MONDAY']]
 
     # CODICE DELLA BOARD DI NOME GESTIONE COMMESSE
     id_board_fatture = '952669855'
@@ -634,9 +587,7 @@ def fetch_mdc_fatture():
                 value_fatture = values_fatture['value']
 
                 # SE L'ID DEL VALORE è PRESENTE IN QUESTA LISTA, ALLORA AGGIUNGI A ROW
-                if value_id_fatture in ["name", "id_elemento", "collega_schede", "stato_1", "cliente_1",
-                                        "collega_schede9", "sotto_elementi_importo0",
-                                        "sotto_elementi_stato_pagamento_incasso"]:
+                if value_id_fatture in ["name", "id_elemento", "collega_schede", "stato_1", "cliente_1", "collega_schede9", "sotto_elementi_importo0", "sotto_elementi_stato_pagamento_incasso"]:
                     row_fatture.append(value_text_fatture)
 
                     if value_id_fatture == "collega_schede":
@@ -645,22 +596,18 @@ def fetch_mdc_fatture():
                             try:
                                 # Parse the JSON string in 'value_text'
                                 data_fatture = json.loads(value_fatture)
-                                # print("Parsed JSON data:", data)
 
                                 if "linkedPulseIds" in data_fatture:
                                     linked_pulse_ids = data_fatture["linkedPulseIds"]
 
                                     if linked_pulse_ids:
                                         linked_pulse_id = linked_pulse_ids[0].get("linkedPulseId")
-                                        # print("Linked Pulse ID: ", linked_pulse_id)
 
                             except json.JSONDecodeError:
                                 pass
                         row_fatture.append(linked_pulse_id)
                     else:
                         pass
-                        # APPEND None TO row IF linked_pulse_id IS None
-                        # row.append(None)
 
             # GIUSTAMENTE QUESTA LISTA VERRA' AGGIUNTA ALLA TABELLA OGNI VOLTA CHE FINISCE IL LOOP
             table_data_fatture.append(row_fatture)
@@ -688,7 +635,6 @@ def fetch_mdc_utenti():
 
     #FACCIAMO UNA RICHIESTA JSON
     r_utenti = requests.post(url=apiUrl_utenti, json=data_utenti, headers=headers_utenti)
-    #print(r_utenti.json())
     #DEFINIAMO IL NOSTRO JSON CON LA VARIABILE response_data
     response_data_utenti = r_utenti.json()
     #print(response_data_utenti)
@@ -712,20 +658,21 @@ def fetch_mdc_utenti():
 
 
 
-
-
 def write_utenti(table_data_utenti):
 
+    #CLASSIFICAZIONE DEI SINGOLI DATI PER ROW
     for row_utenti in table_data_utenti[1:]:  # Start from index 1 to skip headers
         nome_utenti = row_utenti[0]
         email_utenti = row_utenti[1]
         id_utenti = row_utenti[2]
 
-        utenti_instance,created = Utente.objects.get_or_create(nome=nome_utenti,
+    #ASSEGNAZIONE DATI NELL'ISTANZA
+        utenti_instance, created = Utente.objects.get_or_create(nome=nome_utenti,
                                                                email=email_utenti,
                                                                id_monday=id_utenti)
 
         utenti_instance.save()
+
 
 
 def write_aziende(table_data_aziende):
@@ -736,6 +683,8 @@ def write_aziende(table_data_aziende):
         -table_data_aziende: table data of aziende fetche from monday.com
 
     """
+
+    #CLASSIFICAZIONE DEI SINGOLI DATI PER ROW
     for row_az in table_data_aziende[1:]:  # Start from index 1 to skip headers
         #mappo variabili
         nome_az = row_az[0]
@@ -745,14 +694,13 @@ def write_aziende(table_data_aziende):
         cod_fis_az = row_az[6]
         id_monday_az = row_az[7]
 
-        #elaboro variabili che  necessitano elaborazione
-
+        #CONTROLLO DATI VUOTI
         if p_iva_az != '':
             try:
-                # Attempt to convert p_iva_az to a numeric format (e.g., int or float)
-                p_iva_az = int(p_iva_az)  # You can use int() or float() depending on your data type
+                #PROVA A CONVERTIRE p_iva_az IN FORMATO NUMERICO (e.g., int or float)
+                p_iva_az = int(p_iva_az)  # PUOI USARE int() or float() DIPENDE DAL TIPO DI DATI
             except ValueError:
-                # Handle the case where p_iva_az is not a valid number
+                #GESTISCI IL CASO IN CUI p_iva_az NON E' UN NUMERO VALIDO
                 p_iva_az = None
         else:
             p_iva_az = None
@@ -763,29 +711,26 @@ def write_aziende(table_data_aziende):
             except ValueError:
                 continue
 
-                # Check if id_responsabile is not None before splitting
+        #CONTROLLA SE id_responsabile NON E' None PRIMA DEL SPLIT
         if id_responsabile is not None:
-            # Convert the id_responsabile value into a list of integers
+            #CONVERTI p_iva_az IN FORMATO NUMERICO (e.g., int or float)
             id_responsabile_list = [int(id) for id in id_responsabile.split(",")]
 
-
-
         else:
-            id_responsabile_list = []  # or any default value you prefer
+            id_responsabile_list = []  #O QUALUNQUE VALORE DI DEFAULT
 
 
+        # CONTROLLA SE id_commessa_az  NON E' None PRIMA DEL SPLIT
         if id_commessa_az is not None:
-            # Convert the id_responsabile value into a list of integers
+            #CONVERTI p_iva_az IN FORMATO NUMERICO (e.g., int or float)
             id_commessa_az_list = [int(id) for id in id_commessa_az.split(",")]
 
         else:
 
-            id_commessa_az_list = []  # or any default value you prefer
+            id_commessa_az_list = []  #O QUALUNQUE VALORE DI DEFAULT
 
 
-
-
-
+        #ASSEGNAZIONE DATI NELL'ISTANZA
         a, created = Aziende.objects.get_or_create(nome=nome_az,
                                                    id_monday=id_monday_az,
                                                    cod_fis=cod_fis_az,
@@ -793,7 +738,7 @@ def write_aziende(table_data_aziende):
                                                    #id_utente=id_responsabile
                                                    )
 
-        # Add responsible users to the ManyToMany field
+        #AGGIUNGI UTENTE FILTRANDO GLI ID  (ManyToMany-field)
         for utente_id in id_responsabile_list:
             try:
                 responsabile = Utente.objects.get(id_monday=utente_id)
@@ -804,7 +749,7 @@ def write_aziende(table_data_aziende):
                 pass
 
 
-        # Add responsible users to the ManyToMany field
+        #AGGIUNGI COMMESSA FILTRANDO GLI ID  (ManyToMany-field)
         for com_id in id_commessa_az_list:
             try:
                 com = Commessa.objects.get(id_monday=com_id)
@@ -814,8 +759,9 @@ def write_aziende(table_data_aziende):
                 # You can log an error, skip, or take other appropriate actions
                 pass
 
-
+        #SALVA L'ISTANZA
         a.save()
+
 
 
 def write_commesse(table_data_commesse):
@@ -826,35 +772,39 @@ def write_commesse(table_data_commesse):
         -table_data_commesse: table data of commesse fetched from monday.com
 
     """
-    # Iterate through the data and update the Commessa model
+    #CLASSIFICAZIONE DEI SINGOLI DATI PER ROW
     for row in table_data_commesse[1:]:  # Start from index 1 to skip headers
-        nome = row[0]  # Assuming the name is in the first column
-        id_monday = row[1]  # Assuming the id_monday is in the second column
+        nome = row[0]
+        id_monday = row[1]
         tipo = row[2]
         priority = row[3]
         date = row[4][0:10]
         aziende_name = row[5]
         aziende_value = row[6]
 
-
+        #CONTROLLO DATI VUOTI
         if aziende_value != '':
             try:
-                # Convert aziende_value to an integer
+                #CONVERTI IN INT
                 aziende_value = int(aziende_value)
             except ValueError:
-                # Handle the case where aziende_value is not a valid number
+                #GESTISCI QUANDO NON E' UN NUMERO VALIDO
                 continue
         else:
             continue
 
+        # CONTROLLO ESISTENZA VALORE
         if id_monday:
             try:
+                # CONVERTI IN INT
                 id_monday = int(id_monday)
             except ValueError:
+                # GESTISCI QUANDO NON E' UN NUMERO VALIDO
                 continue
 
 ##########################################################################################
 
+        # ASSEGNAZIONE DATI NELL'ISTANZA
         c, created = Commessa.objects.get_or_create(nome=nome,
                                                      id_monday=id_monday,
                                                      tipologia=tipo,
@@ -863,54 +813,64 @@ def write_commesse(table_data_commesse):
                                                      id_azienda=aziende_value)
         c.save()
 
+
+
 def commesse_aziende_pair():
 
+    #ITERIAMO TUTTE LE ISTANZE IN AZIENDA
     for aziende_instance in Aziende.objects.all():
 
         id_commessa_az = aziende_instance.id_commessa
 
-        # Check if id_commessa_az is not None
+        #CONTROLLA SE id_commessa_az NON E' None
         if id_commessa_az is not None:
-            # Find the matching Commessa instance based on id_monday
+            # TROVA LA Commessa  TRAMITE FILTRAGGIO DI ID
             matching_commessa = Commessa.objects.filter(id_monday=id_commessa_az).first()
 
-            # If a matching Commessa instance is found, assign it to commesse field of Aziende
+            # SE L'ISTANZA Commessa E' TROVATA , ASSEGNA AL CAMPO commesse DI Aziende
             if matching_commessa is not None:
                 aziende_instance.commesse.add(matching_commessa)
                 aziende_instance.save()
 
 ###########################################################################################################
 
+    #ASSEGNAZIONE DI UNA VARIABILE DI TUTTE LE ISTANZE IN COMMESSA
     commesse = Commessa.objects.all()
 
+    #ITERIAMO LE COMMESSE
     for commessa in commesse:
         id_azienda = commessa.id_azienda
 
+    #CONTROLLO L'ESISTENZA DI id_azienda
         if id_azienda:
-            # Find the matching Aziende instance by id_monday
+            #CERCHIAMO AZIENDE CON ID UGUALE
             matching_aziende = Aziende.objects.filter(id_monday=id_azienda).first()
 
             if matching_aziende:
-                # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
+                #ASSEGNAZIONE DELL'AZIENDA TROVATA AL CAMPO cliente_finale DI Commessa
                 commessa.cliente_finale = matching_aziende
                 commessa.save()
 
+
+
 def aziende_utenti_pair():
+
+    #ASSEGNAZIONE DI UNA VARIABILE DI TUTTE LE ISTANZE IN AZIENDA
     aziende = Aziende.objects.all()
 
+    # ITERIAMO LE AZIENDE
     for azienda in aziende:
         id_responsabile = azienda.id_utente
 
+        #VERIFICHIAMO L'ESISTENZA DI id_responsabile
         if id_responsabile:
-            # Find the matching Aziende instance by id_monday
+            #CERCHIAMO UTENTI CHE HANNO ID UGUALI
             matching_utente = Utente.objects.filter(id_monday=id_responsabile).first()
 
             if matching_utente:
-                # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
+                # ASSEGNIAMO GLI UTENTI CHE COMBACIANO AL CAMPO RESPONSABILE DI AZIENDE
                 azienda.responsabile = matching_utente
                 azienda.save()
-
-
 
 
 
@@ -923,7 +883,7 @@ def write_task(table_data_task):
             -table_data_task: table data of task fetched from monday.com
 
         """
-    # Iterate through the data and update the Commessa model
+    #CLASSIFICAZIONE DEI SINGOLI DATI PER ROW
     for row_task in table_data_task[1:]:  # Start from index 1 to skip headers
         nome_task = row_task[0]
         tipo_task = row_task[1]
@@ -936,16 +896,17 @@ def write_task(table_data_task):
         id_task = row_task[9]
 
 
-        if id_commessa_task is not None and id_commessa_task.strip():  # Check for None and non-empty
-            # Convert the id_commessa_task value into a list of integers
+    #FILTRIAMO LE COMBINAZIONI DI VALORI ES: [1234, 4321]
+        if id_commessa_task is not None and id_commessa_task.strip():  # CONTROLLA SE ESISTE E SE NON E' VUOTO
+            #CONVERTI id_commessa_task IN LISTA INT
             id_commessa_task_list = [int(id) for id in id_commessa_task.split(",")]
 
+    #ALTRIMENTI LA LISTA SARA' VUOTA
         else:
-
-            id_commessa_task_list = []  # or any default value you prefer
-
+            id_commessa_task_list = []  #O VALORE DEFAULT
 
 
+    #CREAZIONE DELL'ISTANZA E ASSEGNAZIONE VALORI
         t, created = Task.objects.get_or_create(nome=nome_task,
                                                 id_monday=id_task,
                                                 tipo=tipo_task,
@@ -956,41 +917,44 @@ def write_task(table_data_task):
                                                 )
 
 
-        # Add responsible users to the ManyToMany field
+        #ITERIAMO GLI ID DELLA LISTA E PROVIAMO AD AGGIUNGERLI
         for com_id in id_commessa_task_list:
             try:
                 com = Commessa.objects.get(id_monday=com_id)
                 t.commesse.add(com)
             except ObjectDoesNotExist:
-                # Handle the case where the Utente doesn't exist
-                # You can log an error, skip, or take other appropriate actions
                 pass
 
-
+        #SALVIAMO L'ISTANZA
         t.save()
-
 
 
 
 def task_commesse_pair():
 
+    #ITERIAMO LE ISTANZE
     for task_instance in Task.objects.all():
 
         id_commessa_task = task_instance.id_commessa
 
-        # Check if id_commessa_az is not None
+        #CONTROLLA SE id_commessa_az NON E' None
         if id_commessa_task is not None:
-            # Find the matching Commessa instance based on id_monday
+            #CERCHIAMO LA Commessa CON ID UGUALE
             matching_commessa = Commessa.objects.filter(id_monday=id_commessa_task).first()
 
-            # If a matching Commessa instance is found, assign it to commesse field of Aziende
+            #SE L'ISTANZA Commessa E' TROVATA, AGGIUNGI AL CAMPO commesse DI Aziende
             if matching_commessa is not None:
                 task_instance.commesse.add(matching_commessa)
                 task_instance.save()
 
+
+
 def task_utenti_pair():
+
+    #ASSEGNAZIONE DI TUTTE LE ISTANZE TRAMITE VARIABILE
     tasks = Task.objects.all()
 
+    #ITERO ISTANZE CONTROLLO GLI ID E AGGIUNGO
     for task in tasks:
         id_responsabile = task.id_utente
 
@@ -1006,6 +970,8 @@ def task_utenti_pair():
 
 
 def write_contratti(table_data_contratti):
+
+    #ASSEGNAZIONE VALORI A ROW
     for row_contratti in table_data_contratti[1:]:  # Start from index 1 to skip headers
         nome_contratti = row_contratti[0]
         ultimo_aggiornamento_contratti = row_contratti[1][0:10]
@@ -1015,17 +981,40 @@ def write_contratti(table_data_contratti):
         id_passivo_contratti = row_contratti[8]
         id_contratti = row_contratti[9]
 
+        # CONTROLLA SE id_commessa_az  NON E' None PRIMA DEL SPLIT
+        if id_commessa_contratti is not None:
+            # CONVERTI p_iva_az IN FORMATO NUMERICO (e.g., int or float)
+            id_commessa_contratti_list = [int(id) for id in id_commessa_contratti.split(",")]
+
+        else:
+
+            id_commessa_contratti_list = []  # O QUALUNQUE VALORE DI DEFAULT
+
+    #CREAZIONE DELL'ISTANZA E ASSEGNAZIONE VALORI
         contratti_instance, created = Contratti.objects.get_or_create(nome=nome_contratti,
                                                                       id_monday=id_contratti,
                                                                       ultimo_aggiornamento=ultimo_aggiornamento_contratti,
                                                                       data_creazione=data_creazione_contratti,
-                                                                      id_commessa=id_commessa_contratti,
+                                                                      #id_commessa=id_commessa_contratti,
                                                                       id_attivo=id_attivo_contratti,
                                                                       id_passivo=id_passivo_contratti)
+
+        # AGGIUNGI COMMESSA FILTRANDO GLI ID  (ManyToMany-field)
+        for com_id in id_commessa_contratti_list:
+            try:
+                com = Commessa.objects.get(id_monday=com_id)
+                contratti_instance.commesse.add(com)
+            except ObjectDoesNotExist:
+                pass
+
+    #SALVATAGGIO ISTANZA
         contratti_instance.save()
+
+
 
 def contratti_com_att_pass_pair():
 
+    #ITERAZIONE ISTANZE FILTRAGGIO ID UGUALI ED ASSEGNAZIONE
     for contratti_instance in Contratti.objects.all():
 
         id_commessa_contratti = contratti_instance.id_commessa
@@ -1041,9 +1030,10 @@ def contratti_com_att_pass_pair():
                 contratti_instance.save()
 
 
-
+    #CREAZIONE DI UNA VARIABILE CON TUTTE LE ISTANZE
     contratti = Contratti.objects.all()
 
+    #ITERAZIONE DELLE ISTANZE CONTROLLO ID E ASSEGNAZIONE AZIENDA ATTIVA
     for contratto in contratti:
         id_attivo = contratto.id_attivo
 
@@ -1056,6 +1046,7 @@ def contratti_com_att_pass_pair():
                 contratto.sog_attivo = matching_attivo
                 contratto.save()
 
+    # ITERAZIONE DELLE ISTANZE CONTROLLO ID E ASSEGNAZIONE AZIENDA PASSIVA
     for contratto in contratti:
         id_passivo = contratto.id_passivo
 
@@ -1070,8 +1061,9 @@ def contratti_com_att_pass_pair():
 
 
 
-
 def write_servizi(table_data_servizi):
+
+    #ASSEGNAZIONE VALORI A ROW
     for row_servizi in table_data_servizi[1:]:  # Start from index 1 to skip headers
         nome_servizi = row_servizi[0]
         tipo_servizi = row_servizi[3]
@@ -1080,16 +1072,15 @@ def write_servizi(table_data_servizi):
         id_servizi = row_servizi[6]
         id_responsabile = row_servizi[2]
 
-            # Check if id_responsabile is not None before splitting
+        #CONTROLLO VALORI VUOTI PRIMA DI SPLIT
         if id_responsabile is not None:
-            # Convert the id_responsabile value into a list of integers
+            #CONVERTO IN INT
             id_responsabile_list = [int(id) for id in id_responsabile.split(",")]
-
         else:
-            id_responsabile_list = []  # or any default value you prefer
+            id_responsabile_list = []  #O VALORE DEFAULT
 
 
-
+        #CREAZIONE ISTANZA CON ASSEGNAZIONE VALORI
         servizi_instance, created = Servizio.objects.get_or_create(nome=nome_servizi,
                                                               tipologia=tipo_servizi,
                                                               link_fonte=link_servizi,
@@ -1097,22 +1088,22 @@ def write_servizi(table_data_servizi):
                                                               id_monday=id_servizi
                                                               )
 
-        # Add responsible users to the ManyToMany field
+        #ITERO VALORI MULTIPLI DALLA LISTA E AGGIUNGO
         for utente_id in id_responsabile_list:
             try:
                 responsabile = Utente.objects.get(id_monday=utente_id)
                 servizi_instance.responsabile.add(responsabile)
             except ObjectDoesNotExist:
-                # Handle the case where the Utente doesn't exist
-                # You can log an error, skip, or take other appropriate actions
                 pass
 
+        #SALVO ISTANZA
         servizi_instance.save()
 
 
 
-
 def write_contatti(table_data_contatti):
+
+    #ASSEGNAZIONE VALORI A ROW
     for row_contatti in table_data_contatti[1:]:  # Start from index 1 to skip headers
         nome_contatti = row_contatti[0]
         qualita_contatti = row_contatti[1]
@@ -1120,28 +1111,24 @@ def write_contatti(table_data_contatti):
         id_commesse_contatti = row_contatti[5]
         id_contatti = row_contatti[6]
 
-
+    #CONTROLLO VALORI SE ESISTONO E SE NON VUOTI PRIMA DI SPLIT
         if id_commesse_contatti is not None and id_commesse_contatti.strip():
-            # Convert the id_responsabile value into a list of integers
+            #CONVERTI IN INT
             id_commesse_contatti_list = [int(id) for id in id_commesse_contatti.split(",")]
-
         else:
-
-            id_commesse_contatti_list = []  # or any default value you prefer
+            id_commesse_contatti_list = []  #O VALORE DEFAULT
 
 
 
         if id_aziende_contatti is not None and id_aziende_contatti.strip():
-            # Convert the id_responsabile value into a list of integers
+            #CONVERTI IN INT
             id_aziende_contatti_list = [int(id) for id in id_aziende_contatti.split(",")]
-
         else:
-
-            id_aziende_contatti_list = []  # or any default value you prefer
-
+            id_aziende_contatti_list = []  #O VALORE DEFAULT
 
 
 
+    #CREAZIONE ISTANZA E ASSEGNAZIONE VALORI
         contatti_instance, created = Contatti.objects.get_or_create(nome=nome_contatti,
                                                                     in_qualita_di=qualita_contatti,
                                                                     #id_azienda=id_aziende_contatti,
@@ -1149,80 +1136,83 @@ def write_contatti(table_data_contatti):
                                                                     id_monday=id_contatti
                                                                     )
 
-        # Add responsible users to the ManyToMany field
+        #ITERO DATI LISTA UTENTI E PROVO AD ASSEGNARE
         for com_id in id_commesse_contatti_list:
             try:
                 com = Commessa.objects.get(id_monday=com_id)
                 contatti_instance.commesse.add(com)
+
             except ObjectDoesNotExist:
-                # Handle the case where the Utente doesn't exist
-                # You can log an error, skip, or take other appropriate actions
                 pass
 
 
-        # Add responsible users to the ManyToMany field
+        #ITERO DATI LISTA AZIENDE E PROVO AD ASSEGNARE
         for az_id in id_aziende_contatti_list:
             try:
                 az = Aziende.objects.get(id_monday=az_id)
                 contatti_instance.azienda_di_appartenenza.add(az)
 
             except ObjectDoesNotExist:
-                # Handle the case where the Utente doesn't exist
-                # You can log an error, skip, or take other appropriate actions
                 pass
 
-
+        #SALVO ISTANZA
         contatti_instance.save()
+
+
 
 def contatti_com_az_pair():
 
+    #ITERO ISTANZE CONTROLLO ID UGUALE E ASSEGNO COMMESSA
     for contatti_instance in Contatti.objects.all():
 
         id_commessa_contatti = contatti_instance.id_commessa
 
-        # Check if id_commessa_az is not None
+        #CONTROLLO SE id_commessa_az NON E' None
         if id_commessa_contatti is not None:
-            # Find the matching Commessa instance based on id_monday
             matching_commessa = Commessa.objects.filter(id_monday=id_commessa_contatti).first()
 
-            # If a matching Commessa instance is found, assign it to commesse field of Aziende
+            #SE L'ISTANZA Commessa E' TROVATA,ASSEGNA AL CAMPO commesse DI Aziende
             if matching_commessa is not None:
                 contatti_instance.commesse.add(matching_commessa)
                 contatti_instance.save()
 
         contatti = Contatti.objects.all()
 
+        #ITERO ISTANZE CONTROLLO ID UGUALE E ASSEGNO COMMESSA
         for contatto in contatti:
             id_azienda = contatto.id_azienda
 
             if id_azienda:
-                # Find the matching Aziende instance by id_monday
                 matching_azienda = Aziende.objects.filter(id_monday=id_azienda).first()
 
                 if matching_azienda:
-                    # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
                     contatto.azienda_di_appartenenza = matching_azienda
                     contatto.save()
 
 
+
 def write_fatture(table_data_fatture):
+
+    #ASSEGNO VALORI A ROW
     for row_fatture in table_data_fatture[1:]:  # Start from index 1 to skip headers
         nome_fatture = row_fatture[0]
         importo_fatture = row_fatture[1]
         stato_fatture = row_fatture[2]
-
         id_commmessa_fatture = row_fatture[3]
         id_contratto_fatture = row_fatture[4]
-
         anno_fatture = row_fatture[5]
         id_fatture = row_fatture[6]
 
+        #LA VARIABILE ESISTE SE E' DIVERSA DA 0
         importo_fatture = importo_fatture if importo_fatture else 0
+
+        #CONTROLLA SE LA DATA E' UN NUMERO
         if anno_fatture.isdigit():
             anno_fatture = anno_fatture
         else:
             anno_fatture = None
 
+        #CREAZIONE ISTANZA ED ASSEGNAZIONE VALORI
         fatture_instance, created = Fatture.objects.get_or_create(nome=nome_fatture,
                                                                   id_monday=id_fatture,
                                                                   stato=stato_fatture,
@@ -1230,23 +1220,24 @@ def write_fatture(table_data_fatture):
                                                                   id_contratti=id_contratto_fatture,
                                                                   anno_competenza=anno_fatture,
                                                                   )
-
+        #SALVA ISTANZA
         fatture_instance.save()
+
 
 
 def fatt_contr_pair():
 
+    #CREAZIONE VARIABILE CONTENENTE TUTTE LE ISTANZE
     fatture = Fatture.objects.all()
 
+    #ITERIAMO LE ISTANZE FILTRIAMO E ASSEGNAMO
     for fattura in fatture:
         id_contratti = fattura.id_contratti
 
         if id_contratti:
-            # Find the matching Aziende instance by id_monday
             matching_contratto= Contratti.objects.filter(id_monday=id_contratti).first()
 
             if matching_contratto:
-                # Assign the matching Aziende instance to the cliente_finale field of the Commessa instance
                 fattura.contratto = matching_contratto
                 fattura.save()
 
